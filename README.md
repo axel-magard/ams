@@ -24,3 +24,6 @@ based on a model consisting of
  OS/2 went away and thus AMS went away, but I kept the source code all the time and now after retiring from IBM I decided to re-implement AMS in Python, using the wxPython library for the Graphical User Frontend.
  
  The math behind AMS has been developed by [Prof. Dr. Thomas Hanschke](https://www.mathematik.tu-clausthal.de/personen/thomas-hanschke/)
+ 
+  ## Documentation
+  is [here](https://htmlpreview.github.io/?https://raw.githubusercontent.com/axel-magard/ams/main/html/ams.html) 
