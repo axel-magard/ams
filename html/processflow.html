@@ -1,0 +1,29 @@
+<html>
+<head>
+<style>
+h1.hidden {
+        color: black;
+}
+</style>
+</head>
+<body>
+<h1 class="hidden">AMS Process Flow</h1>
+<p>An <a href="ams.html">AMS</a> Process Flow represents the sequence of <a href="operations.html">Operations</a> needed to manufacture parts of a given <a href="prodtypes.html">Product Type</a>.</p>
+<p>Each step in a Process Flow ( a transition ) is defined by its predecessor Operation, successor Operation and a transition probability. A predecessor Operation can have multiple successor Operations with different transition probabilities. The sum of these can not exceed 100%, but can be smaller than 100% to indicate that parts are lost (scrapped) when leaving the predecessor operation.</p>
+<p>A step in the Process Flow ( or transitionn ) following attributes:</p>
+<ul>
+        <li><b>Predecessor Operation</b>: Operation parts are coming from</li>
+        <li><b>Successor Operations</b>: Operations parts are going to</li>
+        <li><b>Probability</b>: Probability parts are taking this path from predecessor Operation to successor Operation</li>
+</ul>
+<p>In addition the following cost and resource specific attributes can be defined:</p>
+<ul>
+        <li><b>Operation Time</b>: Operator time needed to transport part from predecessor Operation to successor Operation</li>
+        <li><b>Transition Cost</b>: Cost occuring for this transport</li>
+        <li><b>Transition Time</b>: Time needed for this transport</li>
+</ul>
+<p>To define a Process Flow right-click on a Product Type in the tree view of model artefacts on the left side of the screen and select "Edit Process Flow".</p>
+<table><tbody><tr><td><img src="images/Edit Process Flow Menu.png"/></td><td><font size=+4>&#8594;</font></td></td><td><img src="images/Edit Process Flow.png"/></td></tr></tbody></table>
+<p>The "Edit Process Flow" dialog also allows to add or delete successor Operations for a selected predecessor Operation.</p>
+</body>
+</html>

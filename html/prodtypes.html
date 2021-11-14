@@ -1,0 +1,35 @@
+<html>
+<head>
+<style>
+h1.hidden {
+        color: black;
+}
+</style>
+</head>
+<body>
+<h1 class="hidden">AMS Product Types</h1>
+<p>A Product Type in <a href="ams.html">AMS</a> represents a type of part manufactured. For all Product Types a Product Mix is defined by specifying a percentage value for each Product Type indicating the share this Product Type has in the overall Workload for the manufacturing line modeled.</p>
+<p>For every AMS Product Type <a href="operations.html">Operations</a> and a <a href="processflow.html">Process Flow</a> have to be specified.</p>
+<p>An AMS Product Type has the following attributes:</p>
+<ul>
+        <li><b>Parts In</b>: how parts are called when entering the manufacturing line ( e.g. "Wafer" )</li>
+        <li><b>Parts Out</b>: how parts are called when leaving the manufacturing line ( e.g. "Slider" )</li>
+        <li><b>Description</b>: description for this Product Type</li>
+        <li><b>Percentage</b> share of this Product Type in the overall Workload for the manufacturing line modeled.  </li>
+</ul>
+<p>⚠️Please note that all Percentage values for all Product Types need to add up to 100% for a valid model. If this is not the case an appropriate error message will be shown when trying to compute this model.</p>
+<p>In addition the following cost and resource specific attributes can be defined:</p>
+<ul>
+        <li><b>Inventory</b>: Inventory cost per part ( capital commitment )</li>
+        <li><b>Space</b> needed to store a part of this Product Type</li>
+        <li><b>Income</b> Income generated when selling this part</li>
+</ul>
+<p>To change attributes of a Product Type either right-click on a Product Type in the tree view of model artefacts on the left side of the screen and select "Edit" ...</p>
+<table><tbody><tr><td><img src="images/Edit Product Type Menu.png"/></td><td><font size=+4>&#8594;</font></td></td><td><img src="images/Product Type Preferences.png"/></td></tr></tbody></table>
+<p>... or right-click on "Product Types" and select "Edit".</p>
+<table><tbody><tr><td><img src="images/Edit All Product Types Menu.png"/></td><td><font size=+4>&#8594;</font></td><td><img src="images/Edit Product Types.png" width=500/></td></tr></tbody></table>
+<p>The "Edit Product Types" dialog also allows to add or delete Product Types. This can also be achieved by right-clicking on a Product Type and selecting "Add" or "Delete".</p>
+<p>When deleting a Product Type a confirmation message box will appear reminding you that also all operations defined for that Product Type will be deleted.</p>
+<img src="images\Delete Product Type Confirmation.png"/>
+</body>
+</html>

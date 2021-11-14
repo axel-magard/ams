@@ -1,0 +1,40 @@
+<html>
+<head>
+<style>
+h1.hidden {
+        color: black;
+}
+</style>
+</head>
+<body>
+<h1 class="hidden">AMS Workcenter</h1>
+<p>An <a href="ams.html">AMS</a> Workcenter represents a physical resource in a manufacturing line, typically a collection of machines or work places where manufacturing operations are performed.</p>
+<p>An AMS Workcenter has the following attributes</p>
+<dl>
+        <dt><b>Capacity</b></dt><dd>number of work stations (machines or work places)</dd>
+        <dt><b>Batch size</b></dt><dd>how man parts are processed in parallel at the same time</dd>
+        <dt><b>Coefficient of Variation</b> of the Mean Cycle Time of manufacturing operations performed at this workcenter</dt>
+        <dt><b>Reliability</b> ( or Availability )</dt><dd>percentage of time work center is available for manufacturing</dd>
+        <dt><b>Mean Down Time</b></dt><dd>mean duration of periods of unavailability</dd>
+        <dt><b>Coefficient of Variation of Mean Down Time</b></dt>
+</dl>
+<p>In addition the following cost and resource specific attributes can be defined:</p>
+<dl>
+        <dt><b>Depreciation</b></dt><dd>yearly Depreciation, a fixed cost</dd>
+        <dt>Cost of <b>Service & Maintenance</b></dt><dd>yearly cost for Service & Maintenance</dd>
+        <dt><b>Operation</b> Cost</dt><dd>Operational cost per unit of time a part is processed</dd>
+        <dt><b>Floor Space</b> needed for this workcenter</dt>
+        <dt><b>Special Area</b> space needed for this workcenter</dt>
+        <dt>A flag indicating whether <b>Floor Space is used as buffer space</b> ( = space for parts waiting )</dt>
+        <dt>Cost of <b>Scheduled Maintenance</b></dt>
+        <dt>Cost of <b>Un-scheduled Maintenance</b></dt>
+</dl>
+<p>To change Workcenter attributes either right-click on a Workcenter in the tree view of model artefacts on the left side of the screen and select "Edit" ...</p>
+<table><tbody><tr><td><img src="images/Edit Workcenter Menu.png"/></td><td><font size=+4>&#8594;</font></td></td><td><img src="images/Workcenter Preferences.png"/></td></tr></tbody></table>
+<p>... or right-click on "Workcenter" and select "Edit".</p>
+<table><tbody><tr><td><img src="images/Edit All Workcenter Menu.png"/></td><td><font size=+4>&#8594;</font></td><td><img src="images/Edit Workcenter.png" width=500/></td></tr></tbody></table>
+<p>The "Edit Workcenter" dialog also allows to add or delete workcenter. This can also be achieved by right-clicking on a workcenter and selecting "Add" or "Delete".</p>
+<p>When a Workcenter is deleted it is required to assign all operations assigned to that Workcenter to a different Workcenter. Thus an "Operation Assing ..." dialog will appear for each operation asking to do so.</p>
+<img src="images/Operations Assign.png"/>
+</body>
+</html>

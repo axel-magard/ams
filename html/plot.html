@@ -1,0 +1,47 @@
+<html>
+<head>
+<style>
+h1.hidden {
+        color: black;
+}
+</style>
+</head>
+<body>
+<h1 class="hidden">AMS Characteristics Calculation Plot</h1>
+<p>Characteristics Calculation in <a href="ams.html">AMS</a> computes essential key performance indicators for the entire manufacturing line as well as for every single <a href="workcenter.html">Workcenter</a></p>
+<p>When invoking this report the following characteristics will be plotted over Arrival Rate, Departure Rate, Daily Starts (SOB) or Daily Shipments (SHIP):</p>
+<p>The report will provide for the entire manufacturing line:</p>
+<dl>
+        <dt><b>Throughput</b></dt><dd>Parts per unit of time shipped</dd>
+        <dt><b>Utilization</b></dt><dd>Utilization</dd>
+        <dt><b>Tot. Utilization</b></dt><dd>Utilization at that workcenter including down times</dd>
+        <dt><b>Leadtime</b></dt><dd>Actual processing plus waiting time at that workcenter</dd>
+        <dt><b>WIP</b></dt><dd>Work In Process: average number of parts present at this workcenter - in process or waiting</dd>
+        <dt><b>Queue Length (Mean)</b></dt><dd>Average number of parts waiting in front of workcenter (not available when creating plot for entire manufacturing line )</dd>
+        <dt><b>Queue Length (90 % Quantil)</b></dt><dd>Threshold of number of parts waiting in front of a workcenter not exceeded with a probability 90 % (not available when creating plot for entire manufacturing line )</dd>
+        <dt><b>Efficiency</b></dt><dd>Percentage of Raw Cycle Time related to Leadtime</dd>
+</dl>
+<p>In addition the following cost and resource values can be plotted:</p>
+<dl>
+        <dt><b>Output Related Costs</b></dt><dd>...</dd>
+        <dt><b>Time Related Costs</b></dt><dd>...</dd>
+        <dt><b>Manufacturing Cost per part</b></dt><dd>...</dd>
+        <dt><b>Profit per part</b></dt><dd>...</dd>
+        <dt><b>Manufacturing Cost per unit of time</b></dt><dd>...</dd>
+        <dt><b>Profit per unit of time</b></dt><dd>...</dd>
+        <dt><b>Number Operators</b></dt><dd>Number Operators needed</dd>
+        <dt><b>Floor Space</b></dt><dd>Floor Space needed</dd>
+        <dt><b>Special Area Space</b></dt><dd>Special Area Space needed</dd>
+</dl>
+<p>Example:</p>
+<img src="images/Plot.png"/>
+<p>The characteristics to plot can be selected from the tree view on the left:</p>
+<img src="images/Plot Selection.png"/>
+<p>When doing a right-click a 2nd characteristics can be shown in the plot:</p>
+<img src="images/Plot 1.png"/>
+<p>When doing a right-click on the tree item "Line and Workcenter Characteristics Plot" and selecting "Edit" in the menu the following dialog appears allowing to change x-Axis as well as selecting different characteristics or workcenter:</p>
+<img src="images/Plot Dlg.png"/>
+<br/>
+<img src="images/Plot Workcenter.png"/>
+</body>
+</html>

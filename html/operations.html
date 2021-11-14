@@ -1,0 +1,32 @@
+<html>
+<head>
+<style>
+h1.hidden {
+        color: black;
+}
+</style>
+</head>
+<body>
+<h1 class="hidden">AMS Operations</h1>
+<p>An <a href="ams.html">AMS</a> Operation represents a step in a Process Flow of a <a href="prodtypes.html">Product Type</a></p>
+<p>It has to be assigned to a <a href="workcenter.html">Workcenter</a> and basically describes an operation performed for building a part or batch of parts.</p>
+<p>An AMS Operations has the following attributes:</p>
+<ul>
+        <li><b>Cycle Time</b>: duration of that operation</li>
+        <li><b>Split/Join Factor</b>: can be used to define that multiple parts will be created for one incoming part at that operation (Split/Join Factor > 1), or multiple incoming parts will be put together to form one parts leaving that operation (Split/Join Factor < 1).</li>
+        <li><b>Workcenter</b>: Workcenter this operation is assigned to</li>
+</ul>
+<p>In addition the following cost and resource specific attributes can be defined:</p>
+<ul>
+        <li><b>Material</b>: Material Cost to process this part or batch of parts at this operation</li>
+        <li><b>Scrapping</b> Cost: Cost occuring when scrapping a part or batch of parts at this operation</li>
+        <li><b>Handling Time</b>: Time needed to handle a part or batch of parts at this operation before and after it can be processed</li>
+        <li><b>Inspection Time</b>: Inspection Time needed to check a part or batch of parts at this operation</li>
+</ul>
+<p>To change attributes of an Operation either right-click on an Operation in the tree view of model artefacts on the left side of the screen and select "Edit" ...</p>
+<table><tbody><tr><td><img src="images/Edit Operation Menu.png"/></td><td><font size=+4>&#8594;</font></td></td><td><img src="images/Operation Preferences.png"/></td></tr></tbody></table>
+<p>... or right-click on "Operations" for any of the Product Types and select "Edit".</p>
+<table><tbody><tr><td><img src="images/Edit All Operations Menu.png"/></td><td><font size=+4>&#8594;</font></td><td><img src="images/Edit Operations.png" width=500/></td></tr></tbody></table>
+<p>The "Edit Product Types" dialog also allows to add or delete Product Types. This can also be achieved by right-clicking on a Product Type and selecting "Add" or "Delete".</p>
+</body>
+</html>

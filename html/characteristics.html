@@ -1,0 +1,57 @@
+<html>
+<head>
+<style>
+h1.hidden {
+        color: black;
+}
+</style>
+</head>
+<body>
+<h1 class="hidden">AMS Characteristics Calculation Table</h1>
+<p>Characteristics Calculation in <a href="ams.html">AMS</a> computes essential key performance indicators for the entire manufacturing line as well as for every single <a href="workcenter.html">Workcenter</a></p>
+<p>When invoking this report a dialog will ask for a Product Type to be selected, or "Overall" to compute for all Product Types, and an Arrival Rate, Departure Rate, Daily Starts (SOB) or Daily Shipments (SHIP), which needs to be below the maximum possible production volume computed by AMS and shown in this dialog.</p>
+<p>The report will provide for the entire manufacturing line:</p>
+<dl>
+        <dt><b>Maximum Arrival Rate</b></dt><dd>Maximum number of parts per unit of time possible for this manufacturing line to be started</dd>
+        <dt><b>Parts Started</b></dt><dd>Number of parts per unit of time started for this manufacturing</dd>
+        <dt><b>Good Parts Out</b></dt><dd>Number of parts per unit of time shipped from this manufacturing line</dd>
+        <dt><b>Yield</b></dt><dd>Percentage of good parts shipped related to parts started</dd>
+        <dt><b>Days / Week</b></dt><dd>Days per Week assumed for this computation</dd>
+        <dt><b>Hours / Day</b></dt><dd>Hours per Day assumed for this computation</dd>
+        <dt><b>Maximum thoughput (shipment)</b></dt><dd>Maximum number of parts possible to be shipped from this manufacturing line</dd>
+        <dt><b>Daily going rate (start of build):</b></dt><dd>Number of parts started per day</dd>
+        <dt><b>Daily going rate (shipment)</b></dt><dd>Number of parts shipped per day</dd>
+        <dt><b>Takt time</b></dt><dd>Time interval between parts travelling through manufacturing line</dd>
+        <dt><b>Utilization (average)</b></dt><dd>Average utilization of all workcenter</dd>
+        <dt><b>Raw cycle time (all parts)</b></dt><dd>Minimum possible processing time (without any waits)</dd>
+        <dt><b>Leadtime (all parts)</b></dt><dd>Actual processing plus waiting time</dd>
+        <dt><b>Leadtime (including idle periods):</b></dt><dd>Actual processing plus waiting time plus idle time of manufacturing, based on Days / Week and Hours / Day specified</dd>
+        <dt><b>Line Efficiency</b></dt><dd>Percentage of Raw Cycle Time related to Leadtime</dd>
+        <dt><b>Line Efficiency (including idle periods)</b></dt><dd>Percentage of Raw Cycle Time related to Leadtime including idle periods</dd>
+        <dt><b>WIP</b></dt><dd>Work In Process: average number of parts present in manufacturing time - in process or waiting</dd>
+</dl>
+<p>The report will provide for every workcenter:</p>
+<dl>
+        <dt><b>Overall load</b></dt><dd>Parts processed at that workcenter per unit of time</dd>
+        <dt><b>Net. Utilization</b></dt><dd>Utilization at that workcenter</dd>
+        <dt><b>Tot. Utilization</b></dt><dd>Utilization at that workcenter including down times</dd>
+        <dt><b>Leadtime</b></dt><dd>Actual processing plus waiting time at that workcenter</dd>
+        <dt><b>WIP</b></dt><dd>Work In Process: average number of parts present at this workcenter - in process or waiting</dd>
+        <dt><b>Queue Length Mean</b></dt><dd>Average number of parts waiting in front of at this workcenter</dd>
+        <dt><b>Queue Length 90 % Quantil</b></dt><dd>Threshold of number of parts waiting in front of at this workcenter not exceeded with a probability 90 %. This value is useful to size buffers needed in front of that workcenter.</dd>
+
+</dl>
+<p>In addition the following cost values can be computed for every workcenter:</p>
+<dl>
+        <dt><b>Depreciation</b></dt><dd>Share of the yearly Depreciation cost of that workcenter occuring per part</dd>
+        <dt><b>Service & Maintenance</b></dt><dd>Share of the yearly Service & Maintenance cost of that workcenter occuring per part</dd>
+        <dt><b>Operation Expense</b></dt><dd>Cost for processing one part at given workcenter </dd>
+        <dt><b>...</b></dt>
+</dl>
+<img src="images/Characteristics Computation Dlg.png"/>
+<p>Example:</p>
+<img src="images/Characteristics Computation.png"/>
+<br/>
+<img src="images/Characteristics Computation Bar Chart.png"/>
+</body>
+</html>
