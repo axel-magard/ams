@@ -1,2 +1,2 @@
 @echo off
-python -W ignore ams.py "data\ASSEMBLY Model with Space.mdl"
+python -W ignore ams.py "data\ASSEMBLY Model.mdl"
