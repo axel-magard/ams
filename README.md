@@ -27,3 +27,30 @@ based on a model consisting of
  
   ## Documentation
   is [here](https://htmlpreview.github.io/?https://raw.githubusercontent.com/axel-magard/ams/main/html/ams.html) 
+  
+  ## Installation
+  
+  ### Alternative 1
+  
+  1. Install Python3 ( Windows users can get it from the Microsoft Store )
+  2. Install git ( Windows users can get it from [here](https://git-scm.com/download/win) )
+  3. Clone this repo ( git clone https://github.com/axel-magard/ams.git )
+  4. Install missing Python packages ( pip install -r requirements.txt )
+  5. Run AMS ( ams.cmd )
+
+  ### Alternative 2
+  
+  1. Install Python3 ( Windows users can get it from the Microsoft Store )
+  2. Download this repo as zip file into a directory of your choice and unpack it there
+  4. Install missing Python packages ( pip install -r requirements.txt )
+  5. Run AMS ( ams.cmd )
+
+  ### Alternative 3 for Windows user only
+  
+  This alternative is for those who do not want to install Python or any Python package on their system.
+  
+  1. Download a binary version from [here](https://u.pcloud.link/publink/show?code=kZx1UUXZhBmaczXdFrJGsP8CB2kYJysRiYL7); right-click on file ams_inst.exe and select "Download"
+  2. Run ams_inst.exe in a directory of your choice. Note that Windows first will refuse to run it since it is from an unknown publisher. ( Hey folks, it is just me ! ). Display details and continue from there to run it.
+  3. Run ams.exe to start AMS
+
+
