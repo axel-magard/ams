@@ -31,6 +31,7 @@ models = []
 model = None
 modelSelected = -1
 options = None
+HOME = os.getcwd()
 
 # begin wxGlade: dependencies
 # end wxGlade
@@ -1105,7 +1106,9 @@ class PrefPTDialog(PrefDialog):
 
 class MyApp(wx.App):
     def __init__(self, redirect=False, filename=None):
+        global HOME
         wx.App.__init__(self, redirect, filename)
+        HOME = os.getcwd()
         self.frame = MyFrame(None, wx.ID_ANY, title='ConnGirl')
         self.frame.Show()
 
@@ -1809,19 +1812,19 @@ class MyFrame(wx.Frame):
         self.showModel(model)
         event.Skip()
     def doHelp(self, event):  # wxGlade: MyFrame.<event_handler>
-        self.htmlFile = "file://"+os.getcwd()+SLASH+"html/ams.html"
+        self.htmlFile = "file://"+HOME+SLASH+"html/ams.html"
         log.append("Loading "+self.htmlFile+" ...")
         self.panel_2.current = self.htmlFile
         self.panel_2.wv.LoadURL(self.panel_2.current)
         event.Skip()
     def showLicense(self, event):  # wxGlade: MyFrame.<event_handler>
-        self.htmlFile = "file://"+os.getcwd()+SLASH+"LICENSE"
+        self.htmlFile = "file://"+HOME+SLASH+"LICENSE"
         log.append("Loading "+self.htmlFile+" ...")
         self.panel_2.current = self.htmlFile
         self.panel_2.wv.LoadURL(self.panel_2.current)
         event.Skip()
     def onSupport(self, event):  # wxGlade: MyFrame.<event_handler>
-        self.htmlFile = "file://"+os.getcwd()+SLASH+"html/support.html"
+        self.htmlFile = "file://"+HOME+SLASH+"html/support.html"
         log.append("Loading "+self.htmlFile+" ...")
         self.panel_2.current = self.htmlFile
         self.panel_2.wv.LoadURL(self.panel_2.current)
