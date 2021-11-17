@@ -59,9 +59,9 @@ class Model:
             if changed:
                 if not treeCtrl.GetItemText(treeItem).endswith("*"):
                     treeCtrl.SetItemText(treeItem,treeCtrl.GetItemText(treeItem)+" *")
-            else:    
+            else:
                 treeCtrl.SetItemText(treeItem,treeCtrl.GetItemText(treeItem).replace(" *",""))
-        self.changed = changed    
+        self.changed = changed
     def render(self,fontsize,what="All",prodType=None):
         self.htmlFile = "%s.html" % self.name
         html = "<html><head>%s<title>%s</title></head><body><h1>%s</h1>" % ((CSSStyle % fontsize),self.name,self.name)
@@ -88,7 +88,7 @@ class Model:
             return msg
         if value < 0.0:
             return f"Model {what} can not be negative !"
-        return msg  
+        return msg
     def updateWorkcenter(self,workcenter):
         for i in range(len(self.workcenter)):
             w = self.workcenter[i]
@@ -108,25 +108,25 @@ class Model:
                         return
 
     def findUsedWorkcenter(self):
-        for i, w in enumerate(self.workcenter):    
+        for i, w in enumerate(self.workcenter):
             w.Used = False
-        for i, t in enumerate(self.prodtypes):    
+        for i, t in enumerate(self.prodtypes):
             for j, o in enumerate(t.operations):
                 try:
                     self.workcenter[o.WCNumber-1].Used = True
-                except IndexError: pass    
+                except IndexError: pass
 
         return
     def findWorkcenter(self, name):
-        for i, w in enumerate(self.workcenter):    
+        for i, w in enumerate(self.workcenter):
             if w.name == name:
                 return w
-        return None   
+        return None
     def findProdType(self, name):
-        for i, p in enumerate(self.prodtypes):    
+        for i, p in enumerate(self.prodtypes):
             if p.name == name:
                 return p
-        return None           
+        return None
     def updateProdType(self,prodtype):
         for i in range(len(self.prodtypes)):
             t = self.prodtypes[i]
@@ -139,13 +139,13 @@ class Model:
         if not t:
             try:
                 t = self.prodtypes[-1]
-            except IndexError: pass    
+            except IndexError: pass
         if not pt:
             pt = ProdType("New Product Type","Parts started","Parts finished", "New Product Type", self)
         if t:
             idx = self.prodtypes.index(t)+1
             self.prodtypes.insert(idx,pt)
-        else:    
+        else:
             self.prodtypes.append(pt)
         if not pt.operations:
             pt.operations.append(Operation("New Operation",self))
@@ -160,74 +160,76 @@ class Model:
         if not w:
             try:
                 w = self.workcenter[-1]
-            except IndexError: pass    
+            except IndexError: pass
         if not wc:
             wc = Workcenter("New Workcenter")
-        wc.name = genUniqueName(self.workcenter,wc.name)            
+        wc.name = genUniqueName(self.workcenter,wc.name)
         idx = 0
         if w:
             idx = self.workcenter.index(w)+1
             self.workcenter.insert(idx,wc)
-        else:    
+        else:
             self.workcenter.append(wc)
         self.bComputed = False
         self.changed = True
         # Now update operation assignments ...
-        for i, t in enumerate(self.prodtypes): 
+        for i, t in enumerate(self.prodtypes):
             for j, o in enumerate(t.operations):
                 if o.WCNumber > idx:
                     o.WCNumber += 1
-        return wc    
+        return wc
     def deleteWorkcenter(self,w):
         idx = self.workcenter.index(w)+1
         self.workcenter.remove(w)
         self.bComputed = False
         # Now update operation assignments ...
-        for i, t in enumerate(self.prodtypes): 
+        for i, t in enumerate(self.prodtypes):
             for j, o in enumerate(t.operations):
                 if o.WCNumber > idx:
                     o.WCNumber -= 1
     def deleteProdType(self,t):
         self.prodtypes.remove(t)
         if len(self.prodtypes) == 1:
-            self.prodtypes[0].percentage = 1.0        
+            self.prodtypes[0].percentage = 1.0
         self.bComputed = False
-    def findOperations(self, workcenter, prodtype=None):    
+    def findOperations(self, workcenter, prodtype=None):
         operations = []
-        for i, t in enumerate(self.prodtypes): 
+        for i, t in enumerate(self.prodtypes):
             for j, o in enumerate(t.operations):
                 if o.WCNumber == self.workcenter.index(workcenter)+1:
                     if not prodtype or o.ProdType == prodtype:
                         operations.append(o)
-        return operations            
+        return operations
     def makeWorkcenterTable(self):
         table = {"Name": [] }
         dict = getDataDictItems("Workcenter",self)
         for d in dict:
-            table[dict[d]["Label"]] = []    
+            table[dict[d]["Label"]] = []
         for w in self.workcenter:
             table["Name"].append(w.name)
             for d in dict:
-                table[dict[d]["Label"]].append(getattr(w,d))            
+                table[dict[d]["Label"]].append(getattr(w,d))
         return table
     def makeProductTypeTable(self):
         table = {"Name": [] }
         dict = getDataDictItems("ProductType",self,"Basic")
         for d in dict:
-            table[dict[d]["Label"]] = []    
+            table[dict[d]["Label"]] = []
         for p in self.prodtypes:
             table["Name"].append(p.name)
             for d in dict:
                 if d == "startOp":
-                    table[dict[d]["Label"]].append(p.operations[p.startOp-1].name)          
-                else:    
-                    table[dict[d]["Label"]].append(getattr(p,d))          
+                    table[dict[d]["Label"]].append(p.operations[p.startOp-1].name)
+                elif d == "percentage":
+                    table[dict[d]["Label"]].append(getattr(p,d)*100.0)
+                else:
+                    table[dict[d]["Label"]].append(getattr(p,d))
         return table
     def checkWorkcenterTable(self, table):
         row = 0
         for name in table["Name"]:
             w = Workcenter(name)
-            msg = ""    
+            msg = ""
             i = table["Name"].index(name)
             dataDict = getDataDictItems("Workcenter",self,unitOfTime)
             for d in dataDict:
@@ -236,7 +238,7 @@ class Model:
                 msg = w.checkProperties(d, table[dataDict[d].get("Label")][i])
                 if msg:
                     return f"Workcenter {w.name}: " + msg
-        return ""        
+        return ""
     def loadWorkcenterTable(self, table):
         newWC = []
         row = 0
@@ -246,8 +248,8 @@ class Model:
             if not w:
                 w = self.addWorkcenter(None,Workcenter(name))
                 newWC.append(w)
-            else: 
-                found.append(w)    
+            else:
+                found.append(w)
             i = table["Name"].index(name)
             w.NumWS = table["# Work Stations"][i]
             w.Batchsize = table["Batchsize"][i]
@@ -262,13 +264,13 @@ class Model:
             w.Res_Area = table[getLabel("Res_Area",self)][i]
             w.BufferIsFloorSpace = table["Buffer Is Floor Space"][i]
             w.Maint_S = table[getLabel("Maint_S",self)][i]
-            w.Maint_U = table[getLabel("Maint_U",self)][i]                
+            w.Maint_U = table[getLabel("Maint_U",self)][i]
             row += 1
         # Delete workcenter not found ...
-        for i, w in enumerate(self.workcenter):    
+        for i, w in enumerate(self.workcenter):
             if w not in found:
-                self.deleteWorkcenter(w)     
-        return newWC    
+                self.deleteWorkcenter(w)
+        return newWC
     def loadProductTypeTable(self, table):
         newPT = []
         for name in table["Name"]:
@@ -284,36 +286,36 @@ class Model:
             try:
                 p.startOp = p.operations.index(p.findOperation(table["Start Operation"][i]))+1
             except ValueError:
-                p.startOp = 0    
+                p.startOp = 0
             p.Cost_Inventory = table[getLabel("Cost_Inventory",self)][i]
             p.Res_Space = table[getLabel("Res_Space",self)][i]
             p.Income = table[getLabel("Income",self)][i]
-        return newPT   
+        return newPT
     def getWorkcenterListAsString(self):
         str = ""
-        for w in self.workcenter:     
+        for w in self.workcenter:
             str += w.name+","
-        return str[:-1]    
+        return str[:-1]
     def getWorkcenterNameList(self):
         l = []
-        for w in self.workcenter:     
+        for w in self.workcenter:
             l.append(w.name)
-        return l   
+        return l
     def clone(self):
         return(copy.deepcopy(self))
-    def changeUnitOfTime(self,old,new):   
-        timeConversion=((1,1/60.0,1/3600.0),(60,1,1/60.0),(3600.0,60.0,1)) 
-        for i, w in enumerate(self.workcenter):    
+    def changeUnitOfTime(self,old,new):
+        timeConversion=((1,1/60.0,1/3600.0),(60,1,1/60.0),(3600.0,60.0,1))
+        for i, w in enumerate(self.workcenter):
             w.MDT *= timeConversion[old][new]
-        for i, t in enumerate(self.prodtypes):    
+        for i, t in enumerate(self.prodtypes):
             for j, o in enumerate(t.operations):
                 o.CT *= timeConversion[old][new]
                 o.Time_Handling *= timeConversion[old][new]
                 o.Time_Inspection *= timeConversion[old][new]
-            for j, tr in enumerate(t.transitions):           
-                tr.OperatorTime *= timeConversion[old][new]     
-                tr.TransitionTime *= timeConversion[old][new]     
-        self.change()        
+            for j, tr in enumerate(t.transitions):
+                tr.OperatorTime *= timeConversion[old][new]
+                tr.TransitionTime *= timeConversion[old][new]
+        self.change()
 
 
 class Workcenter:
@@ -342,18 +344,18 @@ class Workcenter:
         self.NWSNum = 0         # for Capacity calculation
         self.NewWSNum = 0       # for Capacity calculation
         self.Differ = 0         # for Capacity calculation
-    def __repr__(self): 
-        return(f"Workcenter '{self.name}'")        
+    def __repr__(self):
+        return(f"Workcenter '{self.name}'")
     def checkProperties(self, what, value):
         msg = ""
         if value < 0.0:
             return f"Workcenter {what} can not be negative !"
-        if what == "Rel": 
+        if what == "Rel":
             if value > 1.0:
                 msg = "Workcenter Reliability can not exceed 1.0 !"
             elif value < 1.0 and self.MDT == 0.0:
-                msg = "Mean Down Time must be specified when Workcenter Reliability is not 100 % !"                
-        return msg    
+                msg = "Mean Down Time must be specified when Workcenter Reliability is not 100 % !"
+        return msg
 
 
 class ProdType:
@@ -385,19 +387,19 @@ class ProdType:
         self.DayIn = 0                  # for Capacity calculation
         self.ResWCTable = []
         self.ResTable = None
-    def __repr__(self): 
-        return(f"Product Type '{self.name}'")      
+    def __repr__(self):
+        return(f"Product Type '{self.name}'")
     def checkProperties(self, what, value):
         msg = ""
         try:
             if value < 0.0:
                 return f"Product Type {what} can not be negative !"
-        except TypeError:        
+        except TypeError:
             return f"Product Type {what} must be numeric !"
-        if what == "percentage": 
+        if what == "percentage":
             if value > 100.0:
                 msg = "Product Type Percentage must be <= 100 % !"
-        return msg    
+        return msg
 
     def getOp(self,opNum):
         if opNum < 1:
@@ -424,12 +426,12 @@ class ProdType:
         self.fixTransitions(idx)
         # Add transitions to successors of original operation
         for tr in o.ProdType.getSucc(o.ProdType.operations.index(o)+1):
-            o.ProdType.addSucc(self.model,o.ProdType.operations.index(op)+1,tr.to,tr.Prob,tr.OperatorTime,tr.TransitionCost,tr.TransitionTime)            
-        # Split transitions to original and new operation fifty-fifty   
+            o.ProdType.addSucc(self.model,o.ProdType.operations.index(op)+1,tr.to,tr.Prob,tr.OperatorTime,tr.TransitionCost,tr.TransitionTime)
+        # Split transitions to original and new operation fifty-fifty
         for pr in o.ProdType.getPred(o.ProdType.operations.index(o)+1):
             for tr in o.ProdType.findTransitions(from_op=pr):
                 tr.Prob = tr.Prob / 2.0
-                o.ProdType.transitions.append(Transition(tr.op,o.ProdType.operations.index(op)+1,tr.Prob,tr.OperatorTime,tr.TransitionCost,tr.TransitionTime,self.model,o.ProdType))            
+                o.ProdType.transitions.append(Transition(tr.op,o.ProdType.operations.index(op)+1,tr.Prob,tr.OperatorTime,tr.TransitionCost,tr.TransitionTime,self.model,o.ProdType))
         self.model.bComputed = False
         return op
     def deleteOperation(self,o):
@@ -439,10 +441,10 @@ class ProdType:
         self.fixTransitions(idx,"del")
         self.model.bComputed = False
     def findOperation(self, name):
-        for i, o in enumerate(self.operations):    
+        for i, o in enumerate(self.operations):
             if o.name == name:
                 return o
-        return None   
+        return None
     def fixTransitions(self, idx, op="add"):
         for t in self.transitions:
             if op == "add":
@@ -454,8 +456,8 @@ class ProdType:
                 if t.op > idx:
                     t.op -= 1
                 if t.to > idx:
-                    t.to -= 1                                  
-        countSuccessors(self.model)    
+                    t.to -= 1
+        countSuccessors(self.model)
     def deleteTransitions(self, idx):
         for t in self.transitions:
             if t.op == idx:
@@ -491,12 +493,12 @@ class ProdType:
             if t.to == op:
                 pred.append(t.op)
         return pred
-    def findTransitions(self,from_op=None,to_op=None):    
+    def findTransitions(self,from_op=None,to_op=None):
         trans = []
         for t in self.transitions:
             if t.to == to_op or t.op == from_op:
                 trans.append(t)
-        return trans        
+        return trans
     def getAssignedOperations(self,wcIdx):
         wcList = []
         for o in self.operations:
@@ -515,7 +517,7 @@ class ProdType:
             table["Split/Join Factor"].append(o.SJFactor)
             try:
                 table["Workcenter"].append(self.model.workcenter[o.WCNumber-1].name)
-            except IndexError:    
+            except IndexError:
                 table["Workcenter"].append("-")
             table["Material Cost"].append(o.Cost_Mat)
             table["Scrapping Cost"].append(o.Cost_Scrap)
@@ -532,22 +534,22 @@ class ProdType:
                 o.name = name
                 newOp.append(o)
             else:
-                found.append(o)    
+                found.append(o)
             i = table["Name"].index(name)
             o.CT = table["Cycle Time [%s]" % unitOfTime[self.model.unitOfTime]][i]
             o.SJFactor = table["Split/Join Factor"][i]
             if isinstance(table["Workcenter"][i], int):
                 o.WCNumber = table["Workcenter"][i]
-            else:    
+            else:
                 o.WCNumber = self.model.workcenter.index(self.model.findWorkcenter(table["Workcenter"][i]))+1
             o.Cost_Mat = table["Material Cost"][i]
             o.Cost_Scrap = table["Scrapping Cost"][i]
             o.Time_Handling = table["Handling Time [%s]" % unitOfTime[self.model.unitOfTime]][i]
             o.Time_Inspection = table["Inspections Time [%s]" % unitOfTime[self.model.unitOfTime]][i]
         # Delete operations not found ...
-        for i, o in enumerate(self.operations):    
+        for i, o in enumerate(self.operations):
             if o not in found:
-                self.deleteOperation(o)                 
+                self.deleteOperation(o)
         return newOp
 
 
@@ -570,7 +572,7 @@ class Operation:
         self.SFTable = None
         self.ProdType = None        # Product Type
 
-    def __repr__(self): 
+    def __repr__(self):
         return(f"Operation '{self.name}' ({self.id}) or product type {self.ProdType.name}")
 
     def getWCName(self):
@@ -583,10 +585,10 @@ class Operation:
         msg = ""
         if value < 0.0:
             return f"Operation {what} can not be negative !"
-        if what == "CT": 
+        if what == "CT":
             if value == 0.0:
                 msg = "Operation Cycle Time can not be 0.0 !"
-        return msg    
+        return msg
 
 
 
@@ -608,7 +610,7 @@ class Transition:
         except IndexError:
             return "SINK"
     def __repr__(self):
-        return f"{self.getOPName(self.op)} -> {self.getOPName(self.to)}"        
+        return f"{self.getOPName(self.op)} -> {self.getOPName(self.to)}"
 
 class SFac:
     def __init__(self):
@@ -689,7 +691,7 @@ class ResultGraph:
             self.XVal2.append(0.0)
             self.DR.append(0.0)
             self.SOB.append(0.0)
-            self.SHIP.append(0.0)                                    
+            self.SHIP.append(0.0)
             self.Utilization.append(0.0)
             self.WIP.append(0.0)
             self.Efficiency.append(0.0)
@@ -709,13 +711,13 @@ class ResultGraph:
             self.ProfitPerTU.append(0.0)
             self.ProfitPerDay.append(0.0)
             self.IncomePerDay.append(0.0)
-    def reduce(self, n):        
+    def reduce(self, n):
         for i in range(n):
             self.XVal.pop(-1)
             self.XVal2.pop(-1)
             self.DR.pop(-1)
             self.SOB.pop(-1)
-            self.SHIP.pop(-1)                                    
+            self.SHIP.pop(-1)
             self.Utilization.pop(-1)
             self.WIP.pop(-1)
             self.Efficiency.pop(-1)
@@ -853,7 +855,7 @@ def checkModel(model, errors):
             if o.WCNumber < 1 or o.WCNumber > len(model.workcenter):
                 errors.append("No workcenter assigned for operation '%s' of product type '%s'." % (o.name,prodtype.name))
             if o.CT == 0.0:
-                errors.append("Cycle time of product type %s operation %s is 0.0." % (prodtype.name,o.name))                
+                errors.append("Cycle time of product type %s operation %s is 0.0." % (prodtype.name,o.name))
         if max_ct == 0:
             errors.append("Max cycle time for product type '%s' is 0." % (prodtype.name,))
 
@@ -911,7 +913,7 @@ def storeAttr(o,p):
         if val == "True":
             val = "1"
         else:
-            val = "0"    
+            val = "0"
     try:
         v = int(val)
         if v < 0:
@@ -920,38 +922,38 @@ def storeAttr(o,p):
         try:
             v = float(val)
             if v < 0:
-                return "Value for %s must not be negative !" % p.GetName()            
+                return "Value for %s must not be negative !" % p.GetName()
         except ValueError:
             v = val
     if p.GetName() in ("percentage"):
-        v /= 100.0               
+        v /= 100.0
     msg = o.checkProperties(p.GetName(),v)
     if msg:
         return msg
-    setattr(o, p.GetName(), v)            
-    return ""        
+    setattr(o, p.GetName(), v)
+    return ""
 
 def genName(name):
     m = re.match(r"([\w\s]+)(\d+)",name)
     if m:
         name = m.group(1) + str(int(m.group(2))+1)
     else:
-        name = name + " 2"    
+        name = name + " 2"
     return name
 
-def cloneArtefact(a,l=[],name=""):    
+def cloneArtefact(a,l=[],name=""):
     if not name:
-        name = genName(a.name)    
+        name = genName(a.name)
         if l:
             # Make name unique ...
-            while name in [e.name for e in l]:    
-                name = genName(name)    
+            while name in [e.name for e in l]:
+                name = genName(name)
 
-    a_new = copy.deepcopy(a)            
+    a_new = copy.deepcopy(a)
     a_new.name = name
     return(a_new)
 
-def genUniqueName(l,name):    
-    while name in [e.name for e in l]:    
-        name = genName(name)    
+def genUniqueName(l,name):
+    while name in [e.name for e in l]:
+        name = genName(name)
     return name
