@@ -18,12 +18,12 @@ CSSStyle = """
 	  border-bottom: 1px solid #ddd;
       font-size: %spx;
 	}
-    img { width: 100%%; 
+    img { width: 100%%;
     }
     div.error {
         padding: 2px;
         color: red;
-        border-style: inset;       
+        border-style: inset;
         border-color: red;
     }
 </style>
@@ -38,12 +38,12 @@ th_props = [
   ['padding-left', '20px'],
   ['padding-right', '20px'],
   ['width', 'auto'],
-  ['font-size', '%spx']  
+  ['font-size', '%spx']
   ]
 
 td_props = [
   ['text-align', 'right'],
-  ['font-size', '%spx']  
+  ['font-size', '%spx']
   ]
 
 styles = [
@@ -51,7 +51,7 @@ styles = [
   dict(selector="td", props=td_props)
   ]
 
-xValues = ( "Arrival Rate", "Departure Rate", "Daily Starts (SOB)", "Daily Shipments (SHIP)")  
+xValues = ( "Arrival Rate", "Departure Rate", "Daily Starts (SOB)", "Daily Shipments (SHIP)")
 xValueAttributes = ("XVal", "DR", "SOB", "SHIP")
 
 
@@ -59,12 +59,12 @@ class guiTree:
     def __init__(self):
         self.tree = []
     def add(self, obj_id, name, treeItem):
-        self.tree.append({"obj_id": obj_id, "name": name, "treeItem": treeItem})    
+        self.tree.append({"obj_id": obj_id, "name": name, "treeItem": treeItem})
     def get(self, obj_id, name):
         for t in self.tree:
             if t["obj_id"] == obj_id and t["name"] == name:
                 return t["treeItem"]
-    def delete(self, id):            
+    def delete(self, id):
         for t in self.tree:
             if t["obj_id"] == id:
                 del t
@@ -81,13 +81,13 @@ def highlight_bottleneck(s,bn):
     return ['background-color:  #fadbd8' if i == bn and bn >= 0 else '' for i in range(len(s))]
 
 def highlight_notUsed(s,notUsedList):
-    return ['color:  grey' if s["Name"] in notUsedList else '' for i in range(len(s))]    
+    return ['color:  grey' if s["Name"] in notUsedList else '' for i in range(len(s))]
 
 def styleTable(df,fontsize):
     props1 = copy.deepcopy(th_props)
     props2 = copy.deepcopy(td_props)
-    props1[-1][-1] = props1[-1][-1] % fontsize    
-    props2[-1][-1] = props2[-1][-1] % fontsize    
+    props1[-1][-1] = props1[-1][-1] % fontsize
+    props2[-1][-1] = props2[-1][-1] % fontsize
     styles = [
         dict(selector="th", props=props1),
         dict(selector="td", props=props2)
@@ -98,16 +98,16 @@ def formatValue(val,k,model):
     renderer = ()
     if k == "Buffer Is Floor Space":
         renderer = (gridlib.GridCellBoolRenderer(),gridlib.GridCellBoolEditor())
-        # See http://wxpython-users.1045709.n5.nabble.com/problem-with-check-box-in-a-grid-td4974843.html        
+        # See http://wxpython-users.1045709.n5.nabble.com/problem-with-check-box-in-a-grid-td4974843.html
         if val == "1":
             return "1", renderer
-        else:    
+        else:
             return "", renderer
     if isinstance(val,int):
         str = "%d" % val
         renderer = (gridlib.GridCellNumberRenderer(),gridlib.GridCellNumberEditor())
-    elif isinstance(val,float): 
-        str = "%f" % val 
+    elif isinstance(val,float):
+        str = "%f" % val
         # gridlib.GridCellFloatEditor is not usable; throws assertion as soon as non-float value is entered.
         renderer = (gridlib.GridCellFloatRenderer(),gridlib.GridCellTextEditor())
     else:
@@ -115,8 +115,8 @@ def formatValue(val,k,model):
         renderer = (gridlib.GridCellStringRenderer(),gridlib.GridCellTextEditor())
     if k == "Workcenter":
         str = "%s" % val
-        renderer = (gridlib.GridCellEnumRenderer(model.getWorkcenterListAsString()),gridlib.GridCellChoiceEditor(model.getWorkcenterNameList()))            
-    return str, renderer                
+        renderer = (gridlib.GridCellEnumRenderer(model.getWorkcenterListAsString()),gridlib.GridCellChoiceEditor(model.getWorkcenterNameList()))
+    return str, renderer
 
 def RenderModelData(model):
     html = "<table><tr><td>Parts in:</td><td>%s</td><td>%s</td><tr>" % (model.inParts,"")
@@ -156,12 +156,12 @@ def RenderProdTypeData(model):
 
 def RenderOperationData(prodtype):
     html = "<h1>Product Type '%s' Operations</h1><table>" % prodtype.name
-    table = prodtype.makeOperationTable()    
+    table = prodtype.makeOperationTable()
     df = pd.DataFrame(table)
     html += df.style.set_table_styles(styles).render()
     return html
 
-def RenderPflowData(prodtype):  
+def RenderPflowData(prodtype):
     html = "<h1>Product Types '%s' Process Flow</h1><table>" % prodtype.name
     html += "<tr><th>Predecessor</th><th>Successor</th><th>Probability</th>"
     html += "<th>Operation Time [%s]</th><th>Transition Cost</th><th>Transition Time [%s]</th></tr>" % \
@@ -201,26 +201,26 @@ def RenderCapTable(window,model,WIP,OAR,fontsize):
     for t in model.prodtypes:
         table["Product Type"].append(t.name)
         table["Daily Production Demand"].append("%.2f" % t.DayOut)
-        table["Daily Input"].append("%.2f" % t.DayIn)    
+        table["Daily Input"].append("%.2f" % t.DayIn)
     df = pd.DataFrame(table)
-    html += styleTable(df,fontsize)        
+    html += styleTable(df,fontsize)
     html += "<p>Overall arrival rate: %.2f</p>" % OAR
     html += "<p>WIP: %.2f</p>" % WIP
     table = {"Workcenter": [], "New Capacity": [], "Computed Capacity": [], "Difference to current model": []}
     for w in model.workcenter:
         table["Workcenter"].append(w.name)
-        table["New Capacity"].append(w.NewWSNum)    
+        table["New Capacity"].append(w.NewWSNum)
         table["Computed Capacity"].append(w.NWSNum)
         table["Difference to current model"].append(w.Differ)
     df = pd.DataFrame(table)
-    html += styleTable(df,fontsize)                
+    html += styleTable(df,fontsize)
     f = open(htmlFile,"w")
     f.write("<html>"+html+"</html>")
     f.close()
     window.panel_2.wv.LoadURL("file://"+os.getcwd()+SLASH+htmlFile)
 
 
-def RenderWorkLoadTable(window,model,idxType,DailyOut,outputItems,cfg,chart,col,what="All"):
+def RenderWorkLoadTable(window,model,idxType,DailyOut,outputItems,cfg,chart,col,what="All",dx=640,dy=480,dpi=96):
     cols = set()
     fontsize = cfg["gui"]["font-size"]
     htmlFile = "WorkLoadTable.html"
@@ -243,15 +243,15 @@ def RenderWorkLoadTable(window,model,idxType,DailyOut,outputItems,cfg,chart,col,
             table["Relative Load Mfg"].append(o.SFTable.MFG)
             table["Overall Load Per Hour"].append(o.SFTable.Hour)
             table["Overall Load Per Shift"].append(o.SFTable.Shift)
-            table["Overall Load Per Day"].append(o.SFTable.Day)            
+            table["Overall Load Per Day"].append(o.SFTable.Day)
     df = pd.DataFrame(table)
-    if what == "All": 
+    if what == "All":
         for w in outputItems:
-            html, columns = addOutputItem(w,html,cfg,df,-1,col,model,idxType,cols=cols)
+            html, columns = addOutputItem(w,html,cfg,df,-1,col,model,idxType,cols=cols,dx=dx,dy=dy,dpi=dpi)
             for c in columns:
-                cols.add(c)            
+                cols.add(c)
     elif what in outputItems:
-        html, columns = addOutputItem(what,html,cfg,df,-1,col,model,idxType,chart=chart)    
+        html, columns = addOutputItem(what,html,cfg,df,-1,col,model,idxType,chart=chart,dx=dx,dy=dy,dpi=dpi)
         cols = columns
     f = open(htmlFile,"w")
     f.write("<html>"+html+"</html>")
@@ -260,7 +260,7 @@ def RenderWorkLoadTable(window,model,idxType,DailyOut,outputItems,cfg,chart,col,
     return cols
 
 
-def addOutputItem(w,html,cfg,df,bn,col,model,typeSelected,chart="",cols=set()):
+def addOutputItem(w,html,cfg,df,bn,col,model,typeSelected,chart="",cols=set(),dx=640,dy=480,dpi=96):
     leave = None
     s = getOutputItemByName(cfg,w)
     columns = getColumns(cfg,s)
@@ -268,7 +268,7 @@ def addOutputItem(w,html,cfg,df,bn,col,model,typeSelected,chart="",cols=set()):
     suffix = ""
     if typeSelected > 0:
         suffix = " for product type %s" % model.prodtypes[typeSelected-1].name
-    title = "%s %s" % (cfg.get(s,"name"),suffix)    
+    title = "%s %s" % (cfg.get(s,"name"),suffix)
     html += "<h1>%s %s</h1>" % (title,model.name)
     if not chart:
         try:
@@ -281,31 +281,32 @@ def addOutputItem(w,html,cfg,df,bn,col,model,typeSelected,chart="",cols=set()):
             x = "Workcenter"
             if ch.get("x"):
                 x = "Operation"
-            fig, ax = plt.subplots(figsize=(15,6))
+            fig, ax = plt.subplots(figsize=(24,8),dpi=dpi)
             if col and getLabel(col,model) in columns:
                 colList = [getLabel(col,model),]
-            else:    
+            else:
                 colList = [getLabel(c.strip(),model) for c in ch["cols"].split(",")]
             df[df[x] != ""].plot.bar(x=x, y=colList, rot=45, ax=ax, title=title+" chart")
+            # fig.set_size_inches(dx/dpi,dy/dpi)
             encoded = fig_to_base64(fig)
             html += '<img src="data:image/png;base64, {}">'.format(encoded.decode('utf-8'))
             plt.close("all")
     for c in columns:
         cols.add(c)
-    return html, cols    
+    return html, cols
 
 def prepTable(model,typeSelected,CostIndices,Resources):
     table = {"Workcenter": [] }
     dict = getDataDictItems("Workcenter Results",model)
     for d in dict:
-        table[dict[d]["Label"]] = []        
+        table[dict[d]["Label"]] = []
     dict_c = getDataDictItems("Workcenter Results Cost",model)
     for d in dict_c:
-        table[dict_c[d]["Label"]] = []                     
+        table[dict_c[d]["Label"]] = []
     dict_r = getDataDictItems("Workcenter Results Resources",model)
     for d in dict_r:
-        table[dict_r[d]["Label"]] = []                             
-    for i, w in enumerate(model.workcenter):    
+        table[dict_r[d]["Label"]] = []
+    for i, w in enumerate(model.workcenter):
         if typeSelected == 0:
             ResWCTable = w.ResTable
         else:
@@ -317,19 +318,19 @@ def prepTable(model,typeSelected,CostIndices,Resources):
                 m = dict[d].get("Multiply")
             try:
                 try:
-                    table[dict[d]["Label"]].append(getattr(ResWCTable,d)*m)    
-                except AttributeError:                        
-                    table[dict[d]["Label"]].append(getattr(w.SFTable,d)*m)    
-            except AttributeError:    
-                table[dict[d]["Label"]].append(0.0)    
+                    table[dict[d]["Label"]].append(getattr(ResWCTable,d)*m)
+                except AttributeError:
+                    table[dict[d]["Label"]].append(getattr(w.SFTable,d)*m)
+            except AttributeError:
+                table[dict[d]["Label"]].append(0.0)
         for d in dict_c:
-            table[dict_c[d]["Label"]].append(model.CostMatrixArray[typeSelected-1][i][CostIndices[d]])            
+            table[dict_c[d]["Label"]].append(model.CostMatrixArray[typeSelected-1][i][CostIndices[d]])
         for d in dict_r:
-            table[dict_r[d]["Label"]].append(model.ResArray[typeSelected-1][i][d])                                        
+            table[dict_r[d]["Label"]].append(model.ResArray[typeSelected-1][i][d])
     df = pd.DataFrame(table)
-    return df    
+    return df
 
-def RenderTabOverall(window,model,oar,bn,typeSelected,CostIndices,Resources,outputItems,cfg,what="All",chart="",col=""):
+def RenderTabOverall(window,model,oar,bn,typeSelected,CostIndices,Resources,outputItems,cfg,what="All",chart="",col="",dx=640,dy=480,dpi=96):
     fontsize = cfg["gui"]["font-size"]
     htmlFile = "LineOverall.html"
     columns = []
@@ -388,21 +389,21 @@ def RenderTabOverall(window,model,oar,bn,typeSelected,CostIndices,Resources,outp
                     model.CostMatrixArray[typeSelected-1][-1][CostIndices["CostManFacPerTU"]],model.currency,unitOfTime[model.unitOfTime], \
                     model.CostMatrixArray[typeSelected-1][-1][CostIndices["CostManFacPerDay"]],model.currency)
         html += "<tr><td>Income:</td><td></td><td></td><td></td><td></td><td></td><td></td><td>%.2f</td><td>[%s/day]</td></tr>" % \
-                (model.CostMatrixArray[typeSelected-1][-1][CostIndices["CostIncome"]],model.currency)                
+                (model.CostMatrixArray[typeSelected-1][-1][CostIndices["CostIncome"]],model.currency)
         html += "<tr><td>Profit:</td><td>%.4f</td><td>[%s/part]</td><td></td><td>%.4f</td><td>[%s/%s]</td><td></td><td>%.4f</td><td>[%s/Day]</td></tr>" % \
                 (model.CostMatrixArray[typeSelected-1][-1][CostIndices["CostProfitPerPart"]],model.currency, \
                 model.CostMatrixArray[typeSelected-1][-1][CostIndices["CostProfitPerTU"]],model.currency,unitOfTime[model.unitOfTime], \
-                model.CostMatrixArray[typeSelected-1][-1][CostIndices["CostProfitPerDay"]],model.currency)                                
-        html += "</table>"    
+                model.CostMatrixArray[typeSelected-1][-1][CostIndices["CostProfitPerDay"]],model.currency)
+        html += "</table>"
     if what == "All" or what in outputItems:
-        df = prepTable(model,typeSelected,CostIndices,Resources)    
-    if what == "All": 
+        df = prepTable(model,typeSelected,CostIndices,Resources)
+    if what == "All":
         for w in outputItems:
-            html, columns = addOutputItem(w,html,cfg,df,bn,col,model,typeSelected,cols=cols)
+            html, columns = addOutputItem(w,html,cfg,df,bn,col,model,typeSelected,cols=cols,dx=dx,dy=dy,dpi=dpi)
             for c in columns:
-                cols.add(c)            
+                cols.add(c)
     elif what in outputItems:
-        html, columns = addOutputItem(what,html,cfg,df,bn,col,model,typeSelected,chart=chart)    
+        html, columns = addOutputItem(what,html,cfg,df,bn,col,model,typeSelected,chart=chart,dx=dx,dy=dy,dpi=dpi)
         cols = columns
     f = open(htmlFile,"w")
     f.write("<html>"+html+"</html>")
@@ -420,12 +421,12 @@ def RenderGraphics(window,model,col="Utilization",col2=None,x="XVal",workcenterS
     for i in workcenterSelected:
         if i == 0:
             c = "Line"
-        else:    
+        else:
             c = model.workcenter[i-1].name
         if len(workcenterSelected) == 1:
             suffix = " (%s)" % c
-            c = col    
-        columns.append(c)    
+            c = col
+        columns.append(c)
         data[c] = getattr(model.ResGraph[i-1],col)
     dict = getDataDictItems("Plot",model)
     unit = ""
@@ -435,17 +436,17 @@ def RenderGraphics(window,model,col="Utilization",col2=None,x="XVal",workcenterS
         d = dict[columns[0]]
         unit = d["Unit"]
         label = d["Label"]
-    except KeyError: pass    
+    except KeyError: pass
     if col2:
         try:
             d = dict[col2]
             unit2 = d["Unit"]
             label += ", " + d["Label"]
-        except KeyError: pass            
+        except KeyError: pass
     html = "<h1>Line Characteristics Plot - %s - %s" % (label,model.name)
     if col2 and len(workcenterSelected) == 1:
-        data[col2] = getattr(model.ResGraph[-1],col2)        
-    html += "%s</h1>" % suffix    
+        data[col2] = getattr(model.ResGraph[-1],col2)
+    html += "%s</h1>" % suffix
     df = pd.DataFrame(data)
     # Filter out entries with x >= maxOAR
     df = df.loc[lambda df: df['x_'] < model.MaxOAR, :]
@@ -457,19 +458,19 @@ def RenderGraphics(window,model,col="Utilization",col2=None,x="XVal",workcenterS
     if col2 and len(workcenterSelected) == 1:
         label = ""
         label = getLabel(col2,model)
-        df.plot('x',col2,ax=ax, grid=True, secondary_y=True, color='r', label=label)        
+        df.plot('x',col2,ax=ax, grid=True, secondary_y=True, color='r', label=label)
     if x == "DR":
         ax.set_xlabel("Departure Rate")
     elif x == "SOB":
         ax.set_xlabel("Daily Starts (SOB)")
     elif x == "SHIP":
-        ax.set_xlabel("Daily Shipments (SHIP)")                
-    else:    
-        ax.set_xlabel("Arrival Rate")  
+        ax.set_xlabel("Daily Shipments (SHIP)")
+    else:
+        ax.set_xlabel("Arrival Rate")
     if unit:
-        ax.set_ylabel(unit)          
+        ax.set_ylabel(unit)
     if unit2:
-        ax.right_ax.set_ylabel(unit2)                            
+        ax.right_ax.set_ylabel(unit2)
     fig.set_size_inches(dx/dpi,dy/dpi)
     encoded = fig_to_base64(fig)
     html += '<img src="data:image/png;base64, {}">'.format(encoded.decode('utf-8'))

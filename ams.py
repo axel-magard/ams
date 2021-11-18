@@ -135,7 +135,7 @@ class ArtefactsDialog(wx.Dialog):
     def onOK(self, event):  # wxGlade: ArtefactsDialog.<event_handler>
         global model, models
         p = self.GetParent().panel_1.tree_ctrl_1
-        if self.what == "Workcenter": 
+        if self.what == "Workcenter":
             msg = model.checkWorkcenterTable(self.window_2.table)
             if msg:
                 self.msg.SetLabelText(msg)
@@ -143,23 +143,23 @@ class ArtefactsDialog(wx.Dialog):
                 return
             newWC = self.model.loadWorkcenterTable(self.window_2.table)
             for w in newWC:
-                log.append(f"Workcenter {w.name} added.")    
-        elif self.what == "Product Type":                
+                log.append(f"Workcenter {w.name} added.")
+        elif self.what == "Product Type":
             newPT = self.model.loadProductTypeTable(self.window_2.table)
             if len(self.model.prodtypes) == 1:
-                self.model.prodtypes[0].percentage = 1.0               
+                self.model.prodtypes[0].percentage = 1.0
             for pt in newPT:
                 self.GetParent().showProductTypes(pt)
                 log.append(f"Product Type {pt.name} added.")
-        elif self.what == "Operation":                
+        elif self.what == "Operation":
             newOp = self.pt.loadOperationTable(self.window_2.table)
             for o in newOp:
                 log.append(f"Operation {o.name} added for product type {self.pt.name}.")
         self.GetParent().removeModel(model)
-        model = self.model.clone()        
+        model = self.model.clone()
         models[modelSelected] = model
         if self.pt:
-            self.GetParent().prodType = model.findProdType(self.pt.name) 
+            self.GetParent().prodType = model.findProdType(self.pt.name)
         self.GetParent().showModel(model)
         model.bComputed = False
         model.findUsedWorkcenter()
@@ -175,15 +175,15 @@ class ArtefactsDialog(wx.Dialog):
         if self.what == "Workcenter":
             if not self.artefact:
                 self.artefact = Workcenter("New Workcenter")
-                self.artefact.name = genUniqueName(self.model.workcenter,self.artefact.name)            
+                self.artefact.name = genUniqueName(self.model.workcenter,self.artefact.name)
             w = self.model.findWorkcenter(self.window_2.table["Name"][self.row])
             self.model.addWorkcenter(w,self.artefact)
             self.window_2.AppendRows()
             self.window_2.table = self.model.makeWorkcenterTable()
-        elif self.what == "Product Type":            
+        elif self.what == "Product Type":
             if not self.artefact:
                 self.artefact = ProdType("New Product Type","Parts started","Parts finished", "New Product Type", self.model)
-                self.artefact.name = genUniqueName(self.model.prodtypes,self.artefact.name)            
+                self.artefact.name = genUniqueName(self.model.prodtypes,self.artefact.name)
             if len(model.prodtypes) == 0:
                 self.artefact.percentage = 1.0
             if len(self.artefact.operations) == 0:
@@ -193,64 +193,64 @@ class ArtefactsDialog(wx.Dialog):
             self.artefact.percentage = t.percentage
             self.model.addProdType(t,self.artefact)
             self.window_2.AppendRows()
-            self.window_2.table = self.model.makeProductTypeTable()            
-        elif self.what == "Operation":            
+            self.window_2.table = self.model.makeProductTypeTable()
+        elif self.what == "Operation":
             if not self.artefact:
                 self.artefact = Operation("New Operation",model)
                 self.artefact.name = genUniqueName(self.pt.operations,self.artefact.name)
             o = self.pt.findOperation(self.window_2.table["Name"][self.row])
             self.pt.addOperation(o,self.artefact)
             self.window_2.AppendRows()
-            self.window_2.table = self.pt.makeOperationTable()            
+            self.window_2.table = self.pt.makeOperationTable()
         self.row += 1
         self.window_2.GoToCell(self.row,0)
         self.window_2.SelectRow(self.row)
         self.artefact = None
         self.loadArtefacts()
         self.button_CLONE.Enable()
-        self.button_OK.Enable()  
+        self.button_OK.Enable()
         event.Skip()
     def onRemove(self, event):  # wxGlade: ArtefactsDialog.<event_handler>
         row = self.window_2.GetGridCursorRow()
         p = self.GetParent().panel_1.tree_ctrl_1
-        if self.what == "Workcenter":        
+        if self.what == "Workcenter":
             wc = self.model.findWorkcenter(self.window_2.GetCellValue(row,0))
-            p.OnDeleteWc(wc,self.GetParent(),self.model)            
-        elif self.what == "Product Type":    
+            p.OnDeleteWc(wc,self.GetParent(),self.model)
+        elif self.what == "Product Type":
             prev_pt = None
             if row > 0:
-                prev_pt = self.model.findProdType(self.window_2.GetCellValue(row-1,0)) 
+                prev_pt = self.model.findProdType(self.window_2.GetCellValue(row-1,0))
             pt = self.model.findProdType(self.window_2.GetCellValue(row,0))
             if prev_pt:
                 prev_pt.percentage += pt.percentage
             self.model.deleteProdType(pt)
-            self.window_2.table = self.model.makeProductTypeTable()            
-        elif self.what == "Operation":    
-            op = self.pt.findOperation(self.window_2.GetCellValue(row,0))                                         
+            self.window_2.table = self.model.makeProductTypeTable()
+        elif self.what == "Operation":
+            op = self.pt.findOperation(self.window_2.GetCellValue(row,0))
             self.pt.deleteOperation(op)
         self.loadArtefacts()
         self.window_2.DeleteRows(row)
-        self.button_OK.Enable()     
+        self.button_OK.Enable()
         event.Skip()
     def onClone(self, event):  # wxGlade: ArtefactsDialog.<event_handler>
         row = self.window_2.GetGridCursorRow()
-        if self.what == "Workcenter":        
+        if self.what == "Workcenter":
             wc = self.model.findWorkcenter(self.window_2.GetCellValue(row,0))
             self.artefact = cloneArtefact(wc,self.model.workcenter)
-        elif self.what == "Product Type":    
-            pt = model.findProdType(self.window_2.GetCellValue(row,0))     
+        elif self.what == "Product Type":
+            pt = model.findProdType(self.window_2.GetCellValue(row,0))
             self.artefact = cloneArtefact(pt,self.model.prodtypes)
-        elif self.what == "Operation":    
-            op = self.pt.findOperation(self.window_2.GetCellValue(row,0))                   
+        elif self.what == "Operation":
+            op = self.pt.findOperation(self.window_2.GetCellValue(row,0))
             self.artefact = cloneArtefact(op,self.pt.operations)
-        self.onAdd(event)  
-        self.button_OK.Enable()     
+        self.onAdd(event)
+        self.button_OK.Enable()
         event.Skip()
 # end of class ArtefactsDialog
     def loadArtefacts(self):
         for c, k in enumerate(self.window_2.table):
-            self.window_2.SetColLabelValue(c,k)            
-            for i, w in enumerate(self.window_2.table["Name"]):        
+            self.window_2.SetColLabelValue(c,k)
+            for i, w in enumerate(self.window_2.table["Name"]):
                 v, renderer = formatValue(self.window_2.table[k][i],k,self.model)
                 if renderer:
                     self.window_2.SetCellRenderer(i, c, renderer[0])
@@ -311,7 +311,7 @@ class OpAssignDialog(wx.Dialog):
         self.list_box_op.Clear()
         for i, o in enumerate(self.prodtype.operations):
             self.list_box_op.Append(o.name)
-        if event:    
+        if event:
             event.Skip()
 
     def opSelected(self, event):  # wxGlade: OpAssignDialog.<event_handler>
@@ -326,7 +326,7 @@ class OpAssignDialog(wx.Dialog):
         self.operation.WCNumber = i + 1
         self.msg.SetLabel(f"Operation {self.operation.name} assigned to workcenter {self.model.workcenter[i].name}.")
         self.button_OK.Enable()
-        event.Skip()   
+        event.Skip()
 
 # end of class OpAssignDialog
 class CapDialog(wx.Dialog):
@@ -433,7 +433,7 @@ class PlotPropertiesDialog(wx.Dialog):
         # end wxGlade
 
     def doWorkcenterSelected(self, event):  # wxGlade: PlotPropertiesDialog.<event_handler>
-        l = self.check_list_box_1.GetCheckedItems()     
+        l = self.check_list_box_1.GetCheckedItems()
         if len(l) == 0:
             self.button_1.Disable()
         else:
@@ -441,9 +441,9 @@ class PlotPropertiesDialog(wx.Dialog):
             if len(l) > 1:
                 self.list_box_y2.SetSelection(0)
                 self.list_box_y2.Disable()
-            else:    
+            else:
                 self.list_box_y2.Enable()
-        if event:    
+        if event:
             event.Skip()
     def onClearWC(self, event):  # wxGlade: PlotPropertiesDialog.<event_handler>
         self.check_list_box_1.SetCheckedItems([])
@@ -553,7 +553,7 @@ class PfDialog(wx.Dialog):
             try:
                 sum += float(self.grid_1.GetCellValue(i,1))
             except ValueError:
-                self.grid_1.SetCellValue(i,1,"%f" % self.succ[i].Prob)    
+                self.grid_1.SetCellValue(i,1,"%f" % self.succ[i].Prob)
         if sum > 1.0:
             self.statusbox.SetLabel("ERROR: Sum of probabilities can not exceed 1.0 !")
             return False
@@ -724,9 +724,9 @@ class ARDialog(wx.Dialog):
             f = float(val)
         except ValueError:
             f = model.OAR
-        return f    
+        return f
 
-    
+
     def HandleARSelected(self, event):  # wxGlade: ARDialog.<event_handler>
         newMode="IMODE_AR"
         self.label_Max.SetLabel("%.4f" % ConvertAR(model,model.MaxOAR,"IMODE_AR",newMode))
@@ -920,13 +920,13 @@ class PrefDialog(wx.Dialog):
             cfg["computations"][p.GetName().lower()] = p.GetValueAsString()
         if self.GetParent().view == "Plot":
             hourglass = wx.BusyCursor()
-            CompGraphics(model,NumValues=int(cfg["computations"]["GraphicValues"]))            
+            CompGraphics(model,NumValues=int(cfg["computations"]["GraphicValues"]))
             self.GetParent().ApplyReport()
             del hourglass
-        self.Close()                    
+        self.Close()
         event.Skip()
     def onCancel(self, event):  # wxGlade: PrefDialog.<event_handler>
-        self.Close()                    
+        self.Close()
         event.Skip()
 # end of class PrefDialog
 # end of class wxWindow
@@ -955,7 +955,7 @@ class PrefModelDialog(PrefDialog):
                 rc = dlg.ShowModal()
                 if rc == wx.ID_YES:
                     model.changeUnitOfTime(model.unitOfTime,unitOfTime.index(p.GetValueAsString()))
-                dlg.Destroy()                
+                dlg.Destroy()
             storeAttr(m,p)
             self.GetParent().SetItemText(self.GetParent().item, m.name)
             self.GetParent().GetParent().GetParent().GetParent().SetTitle("AMS - %s" % model.name)
@@ -990,13 +990,13 @@ class PrefWCDialog(PrefDialog):
         global cfg
         if not p:
             p = event.GetProperty()
-        w = self.GetParent().GetItemData(self.GetParent().item)["artefact"]   
+        w = self.GetParent().GetItemData(self.GetParent().item)["artefact"]
         self.msg.SetLabelText("")
         msg = storeAttr(w,p)
         if not msg:
             try:
                 self.pendingProperties.remove(p)
-            except ValueError: pass    
+            except ValueError: pass
             self.logMsgs.append(f"Workcenter {w.name}: '{p.GetLabel()}' changed to {p.GetValueAsString()}")
             self.button_OK.Enable()
         else:
@@ -1004,8 +1004,8 @@ class PrefWCDialog(PrefDialog):
             self.msg.SetLabelText(msg)
             self.button_OK.Disable()
 
-    def onOK(self, event):  
-        w = self.GetParent().GetItemData(self.GetParent().item)["artefact"]   
+    def onOK(self, event):
+        w = self.GetParent().GetItemData(self.GetParent().item)["artefact"]
         for p in self.pendingProperties:
             self.OnPropGridChange(event, p)
         model.updateWorkcenter(w)
@@ -1016,8 +1016,8 @@ class PrefWCDialog(PrefDialog):
         p.OnRefresh(None,bRefresh=True)
         model.change(True,p.tree.get(id(model),"treeCtrl"),p.tree.get(id(model),"treeItem"))
         self.Close()
-    def onCancel(self, event):  
-        self.Close()                    
+    def onCancel(self, event):
+        self.Close()
 
 
 
@@ -1026,7 +1026,7 @@ class PrefOpDialog(PrefDialog):
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_DIALOG_STYLE
         PrefDialog.__init__(self, *args, **kwds)
         self.pendingProperties = []
-        self.logMsgs = []        
+        self.logMsgs = []
 
     def OnPropGridChange(self, event, p=None):
         global cfg
@@ -1041,15 +1041,15 @@ class PrefOpDialog(PrefDialog):
         if not msg:
             try:
                 self.pendingProperties.remove(p)
-            except ValueError: pass    
+            except ValueError: pass
             self.logMsgs.append(f"Operation {o.name}: '{p.GetLabel()}' changed to {p.GetValueAsString()}")
             self.button_OK.Enable()
         else:
             self.pendingProperties.append(p)
             self.msg.SetLabelText(msg)
             self.button_OK.Disable()
-    def onOK(self, event):  
-        o = self.GetParent().GetItemData(self.GetParent().item)["artefact"]   
+    def onOK(self, event):
+        o = self.GetParent().GetItemData(self.GetParent().item)["artefact"]
         for p in self.pendingProperties:
             self.OnPropGridChange(event, p)
         model.updateOperation(o)
@@ -1060,15 +1060,15 @@ class PrefOpDialog(PrefDialog):
         p.OnRefresh(None,bRefresh=True)
         model.change(True,p.tree.get(id(model),"treeCtrl"),p.tree.get(id(model),"treeItem"))
         self.Close()
-    def onCancel(self, event):  
-        self.Close()                            
+    def onCancel(self, event):
+        self.Close()
 
 class PrefPTDialog(PrefDialog):
     def __init__(self, *args, **kwds):
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_DIALOG_STYLE
         PrefDialog.__init__(self, *args, **kwds)
         self.pendingProperties = []
-        self.logMsgs = []                
+        self.logMsgs = []
 
     def OnPropGridChange(self, event, p=None):
         global cfg
@@ -1080,18 +1080,18 @@ class PrefPTDialog(PrefDialog):
         if not msg:
             try:
                 self.pendingProperties.remove(p)
-            except ValueError: pass    
+            except ValueError: pass
             self.logMsgs.append(f"Product Type {t.name}: '{p.GetLabel()}' changed to {p.GetValueAsString()}")
             self.button_OK.Enable()
         else:
             self.pendingProperties.append(p)
             self.msg.SetLabelText(msg)
-            self.button_OK.Disable()            
+            self.button_OK.Disable()
 
-    def onOK(self, event):  
+    def onOK(self, event):
         t = self.GetParent().GetItemData(self.GetParent().item)["artefact"]
         for p in self.pendingProperties:
-            self.OnPropGridChange(event, p)            
+            self.OnPropGridChange(event, p)
         model.updateProdType(t)
         self.GetParent().SetItemText(self.GetParent().item, t.name)
         for m in self.logMsgs:
@@ -1100,8 +1100,8 @@ class PrefPTDialog(PrefDialog):
         p.OnRefresh(None,bRefresh=True)
         model.change(True,p.tree.get(id(model),"treeCtrl"),p.tree.get(id(model),"treeItem"))
         self.Close()
-    def onCancel(self, event):  
-        self.Close()                                        
+    def onCancel(self, event):
+        self.Close()
 
 
 class MyApp(wx.App):
@@ -1119,7 +1119,7 @@ class MyFrame(wx.Frame):
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
         self.SetSize((640, 480))
-        
+
         # Menu Bar
         self.frame_1_menubar = wx.MenuBar()
         wxglade_tmp_menu = wx.Menu()
@@ -1233,7 +1233,7 @@ class MyFrame(wx.Frame):
         for a in args:
             model = loadModel(a,self)
             if not model:
-                print("ERROR: Failed to load model %s" % a)            
+                print("ERROR: Failed to load model %s" % a)
                 sys.exit(1)
             model.dirname = os.path.dirname(a)
             model.version = version
@@ -1252,13 +1252,13 @@ class MyFrame(wx.Frame):
 
     def OnRefresh(self, event, bRefresh=False):
         if self.view in (model.name, "Model", "Workcenter", "Operations", "Product Types"):
-            self.panel_2.wv.LoadURL("file://"+os.getcwd()+SLASH+model.render(cfg["gui"]["font-size"],what=self.view,prodType=self.prodType))                
+            self.panel_2.wv.LoadURL("file://"+os.getcwd()+SLASH+model.render(cfg["gui"]["font-size"],what=self.view,prodType=self.prodType))
         elif self.report == "Line and Workcenter Characteristics Table":
             self.ComputeResources(bRefresh=bRefresh)
         elif self.report == "Start Factors":
             self.ComputeSFactors(bRefresh=bRefresh)
         elif self.report == "Capacity Calculation":
-            self.ComputeCapacity(bRefresh=bRefresh)            
+            self.ComputeCapacity(bRefresh=bRefresh)
         elif self.view == "Plot":
             hourglass = wx.BusyCursor()
             CompGraphics(model,NumValues=int(cfg["computations"]["GraphicValues"]))
@@ -1269,20 +1269,22 @@ class MyFrame(wx.Frame):
 
     def ApplyReport(self):
         if self.report in ("Line and Workcenter Characteristics Table","Start Factors"):
-            if self.report == "Line and Workcenter Characteristics Table":    
+            if self.report == "Line and Workcenter Characteristics Table":
                 self.ColsAvailable = list(RenderTabOverall(self,model,model.OAR,model.Bottleneck,model.prodTypeSelected,CostIndices,Resources,getOutputItems(cfg),cfg,
-                                what=self.view,chart=self.chart,col=self.col))
+                                what=self.view,chart=self.chart,col=self.col,
+                                dx=winSize[0],dy=winSize[1],dpi=dpi))
             elif self.report == "Start Factors":
-                self.ColsAvailable = list(RenderWorkLoadTable(self,model,self.prodtype,self.DailyOut,getOutputItems(cfg,"Start Factors"),cfg,self.chart,self.col,what=self.view))                
+                self.ColsAvailable = list(RenderWorkLoadTable(self,model,self.prodtype,self.DailyOut,getOutputItems(cfg,"Start Factors"),cfg,self.chart,self.col,what=self.view,
+                                                                                                dx=winSize[0],dy=winSize[1],dpi=dpi))
         elif self.view == "Plot":
             RenderGraphics(self,model,x=self.x,col=self.col,col2=self.col2,workcenterSelected=self.workcenterSelected,
                                       dx=winSize[0],dy=winSize[1],dpi=dpi)
 
     def removeModel(self,model):
         try:
-            self.panel_1.tree_ctrl_1.DeleteChildren(self.tree.get(id(model), "treeItem"))    
-            self.panel_1.tree_ctrl_1.Delete(self.tree.get(id(model), "treeItem"))        
-        except AttributeError: pass            
+            self.panel_1.tree_ctrl_1.DeleteChildren(self.tree.get(id(model), "treeItem"))
+            self.panel_1.tree_ctrl_1.Delete(self.tree.get(id(model), "treeItem"))
+        except AttributeError: pass
         self.tree.delete(id(model))
 
     def showModel(self, model):
@@ -1299,14 +1301,14 @@ class MyFrame(wx.Frame):
         self.tree.add(id(model), "sf_treeItem",self.panel_1.tree_ctrl_1.AppendItem(self.tree.get(id(model), "c_treeItem"), "Start Factors"))
         self.panel_1.tree_ctrl_1.SetItemData(self.tree.get(id(model), "sf_treeItem"), {"view": "All", "model": modelSelected})
         self.tree.add(id(model), "cap_treeItem",self.panel_1.tree_ctrl_1.AppendItem(self.tree.get(id(model), "c_treeItem"), "Capacity Calculation"))
-        self.panel_1.tree_ctrl_1.SetItemData(self.tree.get(id(model), "cap_treeItem"), {"view": "All", "model": modelSelected})        
+        self.panel_1.tree_ctrl_1.SetItemData(self.tree.get(id(model), "cap_treeItem"), {"view": "All", "model": modelSelected})
         self.tree.add(id(model), "ch_treeItem",self.panel_1.tree_ctrl_1.AppendItem(self.tree.get(id(model), "c_treeItem"), "Line and Workcenter Characteristics Table"))
         self.panel_1.tree_ctrl_1.SetItemData(self.tree.get(id(model), "ch_treeItem"), {"view": "All", "model": modelSelected})
         self.tree.add(id(model), "pl_treeItem",self.panel_1.tree_ctrl_1.AppendItem(self.tree.get(id(model), "c_treeItem"), "Line and Workcenter Characteristics Plot"))
         self.panel_1.tree_ctrl_1.SetItemData(self.tree.get(id(model), "pl_treeItem"), {"view": "Plot", "report": "Plot", "model": modelSelected})
         self.panel_1.tree_ctrl_1.Expand(self.treeRoot)
         self.showWorkcenter()
-        for p in model.prodtypes:    
+        for p in model.prodtypes:
             self.showProductTypes(p)
         self.panel_1.tree_ctrl_1.Expand(self.tree.get(id(model), "treeItem"))
         self.panel_1.tree_ctrl_1.Expand(self.tree.get(id(model), "wc_treeItem"))
@@ -1322,23 +1324,23 @@ class MyFrame(wx.Frame):
         self.panel_1.tree_ctrl_1.DeleteChildren(self.tree.get(id(model), "wc_treeItem"))
         for w in model.workcenter:
             self.tree.add(id(w), "treeItem",self.panel_1.tree_ctrl_1.AppendItem(self.tree.get(id(model), "wc_treeItem"), w.name))
-            self.panel_1.tree_ctrl_1.SetItemData(self.tree.get(id(w), "treeItem"), {"view": "Workcenter", "model": modelSelected, "artefact": w})    
+            self.panel_1.tree_ctrl_1.SetItemData(self.tree.get(id(w), "treeItem"), {"view": "Workcenter", "model": modelSelected, "artefact": w})
 
-    def showProductTypes(self, p):    
+    def showProductTypes(self, p):
         self.tree.add(id(p), "treeItem",self.panel_1.tree_ctrl_1.AppendItem(self.tree.get(id(model), "pt_treeItem"), p.name))
         self.panel_1.tree_ctrl_1.SetItemData(self.tree.get(id(p), "treeItem"), {"view": "Product Types", "model": modelSelected, "artefact": p, "prodtype": p})
         self.tree.add(id(p), "op_treeItem",self.panel_1.tree_ctrl_1.AppendItem(self.tree.get(id(p), "treeItem"), "Operations"))
         self.panel_1.tree_ctrl_1.SetItemData(self.tree.get(id(p), "op_treeItem"), {"view": "Operations", "model": modelSelected, "prodtype": p})
         for o in p.operations:
             self.tree.add(id(o), "treeItem",self.panel_1.tree_ctrl_1.AppendItem(self.tree.get(id(p), "op_treeItem"), o.name))
-            self.panel_1.tree_ctrl_1.SetItemData(self.tree.get(id(o), "treeItem"), {"view": "Operations", "model": modelSelected, "artefact": o, "prodtype": p})            
+            self.panel_1.tree_ctrl_1.SetItemData(self.tree.get(id(o), "treeItem"), {"view": "Operations", "model": modelSelected, "artefact": o, "prodtype": p})
 
     def DetermineView(self,itemData):
         v = ""
         try:
             v = itemData.get("view")
             if v:
-                self.view = v        
+                self.view = v
         except AttributeError:
             if isinstance(itemData,Model):
                 v = "Model"
@@ -1348,36 +1350,36 @@ class MyFrame(wx.Frame):
                 v = "Operations"
             elif isinstance(itemData,ProdType):
                 v = "Product Types"
-        r = ""        
+        r = ""
         try:
             r = itemData.get("report")
         except AttributeError:
             r = ""
-        c = ""        
+        c = ""
         try:
             c = itemData.get("chart")
         except AttributeError:
             c = ""
-        t = ""        
+        t = ""
         try:
             t = itemData.get("prodtype")
         except AttributeError:
-            t = ""            
-        col = self.col        
+            t = ""
+        col = self.col
         try:
             col = itemData.get("col")
         except AttributeError:
             col = self.col
         if not col:
-            col = self.col                    
+            col = self.col
         return v, r, c, t, col
-    
+
     def TreeItemSelected(self, ev):
         global model,modelSelected
         errors = []
         item = ev.GetItem()
         self.sel = self.panel_1.tree_ctrl_1.GetItemText(item)
-        self.itemData = self.panel_1.tree_ctrl_1.GetItemData(item)                
+        self.itemData = self.panel_1.tree_ctrl_1.GetItemData(item)
         modelSelected = self.itemData["model"]
         model = models[modelSelected]
         self.SetTitle("AMS - %s" % model.name)
@@ -1391,7 +1393,7 @@ class MyFrame(wx.Frame):
         if sel == "Start Factors":
             self.ComputeSFactors()
         elif sel == "Capacity Calculation":
-            self.ComputeCapacity()            
+            self.ComputeCapacity()
         elif sel == "Line and Workcenter Characteristics Table":
             self.ComputeResources()
         elif sel == "Line and Workcenter Characteristics Plot":
@@ -1408,18 +1410,18 @@ class MyFrame(wx.Frame):
                 treeitem = self.tree.get(id(model), "ch_treeItem")
                 self.panel_1.tree_ctrl_1.DeleteChildren(treeitem)
                 item = self.panel_1.tree_ctrl_1.AppendItem(treeitem, "All")
-                self.panel_1.tree_ctrl_1.SetItemData(item, {"report": report, "view": "All", "model": modelSelected})                
+                self.panel_1.tree_ctrl_1.SetItemData(item, {"report": report, "view": "All", "model": modelSelected})
                 item = self.panel_1.tree_ctrl_1.AppendItem(treeitem, "Line")
-                self.panel_1.tree_ctrl_1.SetItemData(item, {"report": report, "view": "Line", "model": modelSelected})                
-            else:    
+                self.panel_1.tree_ctrl_1.SetItemData(item, {"report": report, "view": "Line", "model": modelSelected})
+            else:
                 report = "Start Factors"
                 treeitem = self.tree.get(id(model), "sf_treeItem")
                 self.panel_1.tree_ctrl_1.DeleteChildren(treeitem)
                 item = self.panel_1.tree_ctrl_1.AppendItem(treeitem, "All")
-                self.panel_1.tree_ctrl_1.SetItemData(item, {"report": report, "view": "All", "model": modelSelected})                                
+                self.panel_1.tree_ctrl_1.SetItemData(item, {"report": report, "view": "All", "model": modelSelected})
             for o in getOutputItems(cfg, report):
                 leave = self.panel_1.tree_ctrl_1.AppendItem(treeitem, o)
-                self.panel_1.tree_ctrl_1.SetItemData(leave, {"report": report, "view": o, "model": modelSelected})                
+                self.panel_1.tree_ctrl_1.SetItemData(leave, {"report": report, "view": o, "model": modelSelected})
                 s = getOutputItemByName(cfg,o)
                 charts = getCharts(cfg,s)
                 cnt = 1
@@ -1427,19 +1429,19 @@ class MyFrame(wx.Frame):
                     chart = ch["chart"]
                     leave2 = self.panel_1.tree_ctrl_1.AppendItem(leave, chart.title())
                     cnt += 1
-                    self.panel_1.tree_ctrl_1.SetItemData(leave2, {"report": report, "view": o, "chart": chart, "model": modelSelected})                                    
+                    self.panel_1.tree_ctrl_1.SetItemData(leave2, {"report": report, "view": o, "chart": chart, "model": modelSelected})
                     s = getOutputItemByName(cfg,o)
                     cols = [ c.strip() for c in cfgGet(cfg, s,"columns").split(",")]
                     for c in cols:
-                        item = self.panel_1.tree_ctrl_1.AppendItem(leave2, getLabel(c,model))                
-                        self.panel_1.tree_ctrl_1.SetItemData(item, {"report": report, "col": c, "view": o, "chart": chart, "model": modelSelected})                
-        else:            
+                        item = self.panel_1.tree_ctrl_1.AppendItem(leave2, getLabel(c,model))
+                        self.panel_1.tree_ctrl_1.SetItemData(item, {"report": report, "col": c, "view": o, "chart": chart, "model": modelSelected})
+        else:
             treeitem = self.tree.get(id(model), "pl_treeItem")
             self.panel_1.tree_ctrl_1.DeleteChildren(treeitem)
             for c in self.ColsAvailable:
                 item = self.panel_1.tree_ctrl_1.AppendItem(treeitem, getLabel(c,model))
-                self.panel_1.tree_ctrl_1.SetItemData(item, {"report": "Plot", "col": c, "view": "Plot", "model": modelSelected})                                
-            return self.ColsAvailable[-1]        
+                self.panel_1.tree_ctrl_1.SetItemData(item, {"report": "Plot", "col": c, "view": "Plot", "model": modelSelected})
+            return self.ColsAvailable[-1]
 
     def HandleTreeItemSelection(self, rightClick):
         if not rightClick:
@@ -1448,7 +1450,7 @@ class MyFrame(wx.Frame):
                 c = self.itemData.get("col")
                 if c:
                     self.col = c
-            except AttributeError: pass                  
+            except AttributeError: pass
             if not self.report:
                 self.report = self.sel
             # print(f"Selection: {self.sel}, Report: {self.report}, View: {self.view}, ProdType: {self.prodType}, Chart: {self.chart}, Col: {self.col}, rightClick: {rightClick}")                             ### ###
@@ -1456,16 +1458,16 @@ class MyFrame(wx.Frame):
                 if self.report == "Start Factors":
                     self.ComputeSFactors()
                 elif self.report == "Capacity Calculation":
-                    self.ComputeCapacity()     
+                    self.ComputeCapacity()
                 elif self.report == "Line and Workcenter Characteristics Table":
                     self.ComputeResources()
                 elif self.report == "Plot":
                     self.Plot(self.col)
-            else:        
-                self.ApplyReport()                 
+            else:
+                self.ApplyReport()
             if self.view in (model.name, "Model", "Workcenter", "Operations", "Product Types"):
-                self.panel_2.wv.LoadURL("file://"+os.getcwd()+SLASH+model.render(cfg["gui"]["font-size"],what=self.view,prodType=self.prodType))                
-            self.current_report = self.report    
+                self.panel_2.wv.LoadURL("file://"+os.getcwd()+SLASH+model.render(cfg["gui"]["font-size"],what=self.view,prodType=self.prodType))
+            self.current_report = self.report
             self.modelSelected = modelSelected
 
 
@@ -1475,19 +1477,19 @@ class MyFrame(wx.Frame):
         if errors:
             for e in errors:
                 self.panel_2.wv.LoadURL("file://"+os.getcwd()+SLASH+self.renderErrors(errors))
-        else:                
+        else:
             self.view = "Plot"
             self.ColsAvailable = getPlotsAvailable()
             # self.ColsAvailable = ["Throughput", "Utilization", "LeadTime", "WIP", "QueueLength", "Quantil", "Efficiency", \
             #                     "OutCosts","TimeCosts","ManFacCostsPerPart","ProfitPerPart","ManFacCostsPerTU","ProfitPerTU","Income", \
             #                     "NumOperators","FloorSpace","SpecialArea"]
             if not col:
-                col = self.ColsAvailable[1]                       
+                col = self.ColsAvailable[1]
             hourglass = wx.BusyCursor()
-            CompGraphics(model,NumValues=int(cfg["computations"]["GraphicValues"]))        
+            CompGraphics(model,NumValues=int(cfg["computations"]["GraphicValues"]))
             RenderGraphics(self,model,x=self.x,col=col,col2=self.col2,workcenterSelected=self.workcenterSelected,
                                         dx=winSize[0],dy=winSize[1],dpi=dpi)
-            self.TreeAddReports(self.report)                                    
+            self.TreeAddReports(self.report)
             del hourglass
 
     def ComputeSFactors(self,bRefresh=False):
@@ -1525,10 +1527,11 @@ class MyFrame(wx.Frame):
                     else:
                         break
                 dlg.Destroy()
-            if self.DailyOut > 0.0:    
+            if self.DailyOut > 0.0:
                 ComputeWorkloadTable(model,self.prodtype,self.DailyOut)
-                self.ColsAvailable = list(RenderWorkLoadTable(self,model,self.prodtype,self.DailyOut,getOutputItems(cfg,"Start Factors"),cfg,self.chart,self.col,what=self.view))
-                self.TreeAddReports(self.report)                                    
+                self.ColsAvailable = list(RenderWorkLoadTable(self,model,self.prodtype,self.DailyOut,getOutputItems(cfg,"Start Factors"),cfg,self.chart,self.col,what=self.view,
+                                                            dx=winSize[0],dy=winSize[1],dpi=dpi))
+                self.TreeAddReports(self.report)
 
     def ComputeCapacity(self,bRefresh=False):
         errors = []
@@ -1548,9 +1551,9 @@ class MyFrame(wx.Frame):
                 if dlg.ShowModal() == wx.ID_OK:
                     for i, t in enumerate(model.prodtypes):
                         t.WeekOut = int(dlg.grid_2.GetCellValue(i,1))
-                        bContinue = True    
+                        bContinue = True
                 dlg.Destroy()
-            if bContinue:    
+            if bContinue:
                 WIP, OAR = ComputeCapTable(model)
                 RenderCapTable(self,model,WIP,OAR,cfg["gui"]["font-size"])
 
@@ -1589,7 +1592,7 @@ class MyFrame(wx.Frame):
                     model.prodTypeSelected = dlg.list_box_ProdType.GetSelection()
                     dlg.Destroy()
                 else:
-                    return    
+                    return
             hourglass = wx.BusyCursor()
             CompTabOverall(model,model.oar)
             if model.prodTypeSelected > 0:
@@ -1598,8 +1601,9 @@ class MyFrame(wx.Frame):
             model.CostMatrixArray = ComputeCostAll(model)
             self.TreeAddReports()
             self.ColsAvailable = list(RenderTabOverall(self,model,model.oar,model.Bottleneck,model.prodTypeSelected,CostIndices,Resources,getOutputItems(cfg),cfg,
-                                        what=self.view,chart=self.chart,col=self.col))   
-            del hourglass                         
+                                        what=self.view,chart=self.chart,col=self.col,
+                                        dx=winSize[0],dy=winSize[1],dpi=dpi))
+            del hourglass
 
     def renderErrors(self, errors):
         htmlFile = "%s_err.html" % model.name
@@ -1638,7 +1642,7 @@ class MyFrame(wx.Frame):
         # begin wxGlade: MyFrame.__set_properties
         self.SetTitle("AMS")
         self.frame_1_statusbar.SetStatusWidths([-1])
-        
+
         # statusbar fields
         frame_1_statusbar_fields = ["frame_1_statusbar"]
         for i in range(len(frame_1_statusbar_fields)):
@@ -1700,9 +1704,9 @@ class MyFrame(wx.Frame):
             model.dirname = os.path.dirname(paths[0])
             model.version = version
             models.append(model)
-            modelSelected = len(models)-1            
+            modelSelected = len(models)-1
             self.SetTitle("AMS - %s" % model.name)
-            self.showModel(model)    
+            self.showModel(model)
         event.Skip()
 
     def doExit(self, event):  # wxGlade: MyFrame.<event_handler>
@@ -1719,9 +1723,9 @@ class MyFrame(wx.Frame):
                 rc = dlg.ShowModal()
                 if rc == wx.ID_NO:
                     return
-                dlg.Destroy()                
+                dlg.Destroy()
         except AttributeError:
-            pass        
+            pass
 
         self.Destroy()
         prefs.save(cfg)
@@ -1781,7 +1785,7 @@ class MyFrame(wx.Frame):
             model = importModelLegacy(paths[0])
             model.dirname = os.path.dirname(paths[0])
             models.append(model)
-            modelSelected = len(models)-1            
+            modelSelected = len(models)-1
             self.SetTitle("AMS - %s" % model.name)
             self.showModel(model)
         event.Skip()
@@ -1798,7 +1802,7 @@ class MyFrame(wx.Frame):
                 model.name = pathname.split(os.sep)[-1].replace(".mdl","")
                 with open(pathname, "wb") as f:
                     pickle.dump(model,f)
-                model.change(False,self.tree.get(id(model),"treeCtrl"),self.tree.get(id(model),"treeItem"))    
+                model.change(False,self.tree.get(id(model),"treeCtrl"),self.tree.get(id(model),"treeItem"))
                 self.frame_1_statusbar.SetLabel("Model '%s' saved." % model.name)
             except IOError:
                 self.frame_1_statusbar.SetLabel("Cannot save current data in file '%s'." % pathname)
@@ -1861,7 +1865,7 @@ class CustomTreeCtrl(CT.CustomTreeCtrl):
 
     def handleClick(self, event):
         self.timer.Stop()
-        self.GetParent().GetParent().GetParent().HandleTreeItemSelection(self.rightClick)        
+        self.GetParent().GetParent().GetParent().HandleTreeItemSelection(self.rightClick)
 
     def OnContextMenu(self, event):
         # Setup right-click menu for tree items
@@ -1871,38 +1875,38 @@ class CustomTreeCtrl(CT.CustomTreeCtrl):
         p = self.GetParent().GetParent().GetParent()
         if isinstance(self.GetItemData(self.item).get("artefact"),Model):
             treeMenuItemm1 = menu.Append(wx.ID_ANY, "Edit")
-            self.Bind(wx.EVT_MENU, self.OnEdit, treeMenuItemm1)            
+            self.Bind(wx.EVT_MENU, self.OnEdit, treeMenuItemm1)
         elif isinstance(self.GetItemData(self.item).get("artefact"),Workcenter):
             treeMenuItemw1 = menu.Append(wx.ID_ANY, "Edit")
-            self.Bind(wx.EVT_MENU, self.OnEdit, treeMenuItemw1)            
+            self.Bind(wx.EVT_MENU, self.OnEdit, treeMenuItemw1)
             treeMenuItemw2 = menu.Append(wx.ID_ANY, "Add")
             self.Bind(wx.EVT_MENU, self.OnAdd, treeMenuItemw2)
             treeMenuItemw3 = menu.Append(wx.ID_ANY, "Clone")
-            self.Bind(wx.EVT_MENU, self.OnClone, treeMenuItemw3)                                    
+            self.Bind(wx.EVT_MENU, self.OnClone, treeMenuItemw3)
             treeMenuItemw4 = menu.Append(wx.ID_ANY, "Delete")
-            self.Bind(wx.EVT_MENU, self.OnDelete, treeMenuItemw4)                                    
+            self.Bind(wx.EVT_MENU, self.OnDelete, treeMenuItemw4)
         elif isinstance(self.GetItemData(self.item).get("artefact"),Operation):
             treeMenuItemo1 = menu.Append(wx.ID_ANY, "Edit")
-            self.Bind(wx.EVT_MENU, self.OnEdit, treeMenuItemo1)            
+            self.Bind(wx.EVT_MENU, self.OnEdit, treeMenuItemo1)
             treeMenuItemo2 = menu.Append(wx.ID_ANY, "Add")
-            self.Bind(wx.EVT_MENU, self.OnAdd, treeMenuItemo2)  
+            self.Bind(wx.EVT_MENU, self.OnAdd, treeMenuItemo2)
             treeMenuItemo3 = menu.Append(wx.ID_ANY, "Clone")
-            self.Bind(wx.EVT_MENU, self.OnClone, treeMenuItemo3)                                                
+            self.Bind(wx.EVT_MENU, self.OnClone, treeMenuItemo3)
             treeMenuItemo4 = menu.Append(wx.ID_ANY, "Delete")
-            self.Bind(wx.EVT_MENU, self.OnDelete, treeMenuItemo4)                                                
+            self.Bind(wx.EVT_MENU, self.OnDelete, treeMenuItemo4)
             treeMenuItemo5 = menu.Append(wx.ID_ANY, "Edit Process Flow")
-            self.Bind(wx.EVT_MENU, self.OnEditPFlow, treeMenuItemo5)            
+            self.Bind(wx.EVT_MENU, self.OnEditPFlow, treeMenuItemo5)
             treeMenuItemoa = menu.Append(wx.ID_ANY, "Assign...")
-            self.Bind(wx.EVT_MENU, self.OnAssignOp, treeMenuItemoa)                                    
+            self.Bind(wx.EVT_MENU, self.OnAssignOp, treeMenuItemoa)
         elif isinstance(self.GetItemData(self.item).get("artefact"),ProdType):
             treeMenuItemp1 = menu.Append(wx.ID_ANY, "Edit")
-            self.Bind(wx.EVT_MENU, self.OnEdit, treeMenuItemp1)                        
+            self.Bind(wx.EVT_MENU, self.OnEdit, treeMenuItemp1)
             treeMenuItemp2 = menu.Append(wx.ID_ANY, "Add")
-            self.Bind(wx.EVT_MENU, self.OnAdd, treeMenuItemp2)  
+            self.Bind(wx.EVT_MENU, self.OnAdd, treeMenuItemp2)
             treeMenuItemp3 = menu.Append(wx.ID_ANY, "Clone")
-            self.Bind(wx.EVT_MENU, self.OnClone, treeMenuItemp3)                                              
+            self.Bind(wx.EVT_MENU, self.OnClone, treeMenuItemp3)
             treeMenuItemp4 = menu.Append(wx.ID_ANY, "Delete")
-            self.Bind(wx.EVT_MENU, self.OnDelete, treeMenuItemp4)                                                            
+            self.Bind(wx.EVT_MENU, self.OnDelete, treeMenuItemp4)
             treeMenuItemp2 = menu.Append(wx.ID_ANY, "Edit Process Flow")
             self.Bind(wx.EVT_MENU, self.OnEditPFlow, treeMenuItemp2)
         elif self.GetItemData(self.item).get("view") == "Plot" and p.view == "Plot":
@@ -1912,34 +1916,34 @@ class CustomTreeCtrl(CT.CustomTreeCtrl):
                 treeMenuItemPlot2 = submenu.Append(wx.ID_ANY, xValues[1])
                 treeMenuItemPlot3 = submenu.Append(wx.ID_ANY, xValues[2])
                 treeMenuItemPlot4 = submenu.Append(wx.ID_ANY, xValues[3])
-                treeMenuItemPlotEdit = menu.Append(wx.ID_ANY, "Edit")                
-                self.Bind(wx.EVT_MENU, self.DoPlotEdit, treeMenuItemPlotEdit)         
-                menu.AppendSeparator()               
+                treeMenuItemPlotEdit = menu.Append(wx.ID_ANY, "Edit")
+                self.Bind(wx.EVT_MENU, self.DoPlotEdit, treeMenuItemPlotEdit)
+                menu.AppendSeparator()
                 treeMenuItemPlot = menu.AppendSubMenu(submenu, "X Axis")
                 menu.AppendSeparator()
                 treeMenuItemPlotY = menu.Append(wx.ID_ANY, "Cancel secondary y axis")
-                self.Bind(wx.EVT_MENU, self.DoPlotAR, treeMenuItemPlot1)                        
-                self.Bind(wx.EVT_MENU, self.DoPlotDR, treeMenuItemPlot2)                        
-                self.Bind(wx.EVT_MENU, self.DoPlotSOB, treeMenuItemPlot3)                        
-                self.Bind(wx.EVT_MENU, self.DoPlotSHIP, treeMenuItemPlot4)    
-                self.Bind(wx.EVT_MENU, self.DoPlotNo2ndY, treeMenuItemPlotY)    
+                self.Bind(wx.EVT_MENU, self.DoPlotAR, treeMenuItemPlot1)
+                self.Bind(wx.EVT_MENU, self.DoPlotDR, treeMenuItemPlot2)
+                self.Bind(wx.EVT_MENU, self.DoPlotSOB, treeMenuItemPlot3)
+                self.Bind(wx.EVT_MENU, self.DoPlotSHIP, treeMenuItemPlot4)
+                self.Bind(wx.EVT_MENU, self.DoPlotNo2ndY, treeMenuItemPlotY)
             else:
-                p.col2 = self.GetItemData(self.item).get("col")                        
+                p.col2 = self.GetItemData(self.item).get("col")
                 RenderGraphics(p,model,x=p.x,col=p.col,col2=p.col2,workcenterSelected=p.workcenterSelected,
-                    dx=winSize[0],dy=winSize[1],dpi=dpi)            
-        elif self.GetItemData(self.item).get("view") == "Workcenter":            
+                    dx=winSize[0],dy=winSize[1],dpi=dpi)
+        elif self.GetItemData(self.item).get("view") == "Workcenter":
             treeMenuItemWc1 = menu.Append(wx.ID_ANY, "Edit")
-            self.Bind(wx.EVT_MENU, self.OnEditWC, treeMenuItemWc1)                                    
+            self.Bind(wx.EVT_MENU, self.OnEditWC, treeMenuItemWc1)
             treeMenuItemWc2 = menu.Append(wx.ID_ANY, "Add")
-            self.Bind(wx.EVT_MENU, self.OnAdd, treeMenuItemWc2)            
-        elif self.GetItemData(self.item).get("view") == "Product Types":            
+            self.Bind(wx.EVT_MENU, self.OnAdd, treeMenuItemWc2)
+        elif self.GetItemData(self.item).get("view") == "Product Types":
             treeMenuItemPt1 = menu.Append(wx.ID_ANY, "Edit")
-            self.Bind(wx.EVT_MENU, self.OnEditPT, treeMenuItemPt1)                                                
+            self.Bind(wx.EVT_MENU, self.OnEditPT, treeMenuItemPt1)
             treeMenuItemPt2 = menu.Append(wx.ID_ANY, "Add")
-            self.Bind(wx.EVT_MENU, self.OnAdd, treeMenuItemPt2)            
-        elif self.GetItemData(self.item).get("view") == "Operations":            
+            self.Bind(wx.EVT_MENU, self.OnAdd, treeMenuItemPt2)
+        elif self.GetItemData(self.item).get("view") == "Operations":
             treeMenuItemOp1 = menu.Append(wx.ID_ANY, "Edit")
-            self.Bind(wx.EVT_MENU, self.OnEditOp, treeMenuItemOp1)            
+            self.Bind(wx.EVT_MENU, self.OnEditOp, treeMenuItemOp1)
         selection = self.GetSelections()
         self.PopupMenu(menu)
         menu.Destroy()
@@ -1947,7 +1951,7 @@ class CustomTreeCtrl(CT.CustomTreeCtrl):
     def OnEdit(self, event):
         selection = self.GetSelections()
         if isinstance(self.GetItemData(self.item).get("artefact"),Model):
-            self.HandleModelPreferences(event)        
+            self.HandleModelPreferences(event)
         elif isinstance(self.GetItemData(self.item).get("artefact"),Workcenter):
             self.HandleWCPreferences(event)
         elif isinstance(self.GetItemData(self.item).get("artefact"),Operation):
@@ -1974,7 +1978,7 @@ class CustomTreeCtrl(CT.CustomTreeCtrl):
         dlg.model = model.clone()
         dlg.init(model.clone(),"Product Type")
         dlg.loadArtefacts()
-        dlg.Show()        
+        dlg.Show()
 
     def OnEditOp(self, event):
         p = self.GetParent().GetParent().GetParent()
@@ -1987,8 +1991,8 @@ class CustomTreeCtrl(CT.CustomTreeCtrl):
         dlg.window_2.CreateGrid(len(pt.operations), len(dlg.window_2.table))
         dlg.init(model.clone(),"Operation",pt)
         dlg.loadArtefacts()
-        dlg.Show()                
-        
+        dlg.Show()
+
     def OnEditPFlow(self, event):
         dlg = PfDialog(self)
         dlg.grid_1.SetRowLabelSize(0)
@@ -1996,7 +2000,7 @@ class CustomTreeCtrl(CT.CustomTreeCtrl):
         if isinstance(a,ProdType):
             dlg.prodType = a
             dlg.op = -1
-        else:    
+        else:
             # It's an operation !
             dlg.prodType = a.ProdType
             dlg.op = a.ProdType.operations.index(a)
@@ -2021,11 +2025,11 @@ class CustomTreeCtrl(CT.CustomTreeCtrl):
             if not self.GetItemData(self.item).get("artefact"):
                 ti = self.AppendItem(p.tree.get(id(model), "wc_treeItem"), wc.name)
                 self.Expand(p.tree.get(id(model), "wc_treeItem"))
-            else:    
+            else:
                 ti = self.InsertItem(p.tree.get(id(model), "wc_treeItem"), self.item, wc.name)
             self.SetItemData(ti, {"view": "Workcenter", "model": modelSelected, "artefact": wc})
             log.append(f"Workcenter {wc.name}: added.")
-            p.OnRefresh(None,bRefresh=True)            
+            p.OnRefresh(None,bRefresh=True)
         elif isinstance(self.GetItemData(self.item).get("artefact"),Operation):
             o = self.GetItemData(self.item).get("artefact")
             o_new = None
@@ -2035,31 +2039,31 @@ class CustomTreeCtrl(CT.CustomTreeCtrl):
             ti = self.InsertItem(self.GetItemParent(p.tree.get(id(o), "treeItem")), self.item, op.name)
             self.SetItemData(ti, {"view": "Operations", "model": modelSelected, "artefact": op})
             log.append(f"Operation {op.name}: added.")
-            p.OnRefresh(None,bRefresh=True)            
+            p.OnRefresh(None,bRefresh=True)
         elif isinstance(self.GetItemData(self.item).get("artefact"),ProdType)  or self.GetItemData(self.item).get("view") == "Product Types":
             t = self.GetItemData(self.item).get("artefact")
             if p.addMode == "Clone":
-                t_new = cloneArtefact(t,model.prodtypes)    
+                t_new = cloneArtefact(t,model.prodtypes)
                 # Split percentage fifty-fifty
-                t_new.percentage = t.percentage / 2.0        
+                t_new.percentage = t.percentage / 2.0
                 t.percentage = t.percentage / 2.0
                 # Clone operations
                 t_new.operations = []
-                for i, o in enumerate(t.operations):       
+                for i, o in enumerate(t.operations):
                     t_new.operations.append(cloneArtefact(o,name=o.name))
-                # Clone transitions    
-                t_new.transitions = []    
-                for i, tr in enumerate(t.transitions):       
-                    t_new.transitions.append(cloneArtefact(tr,name="->"))                
+                # Clone transitions
+                t_new.transitions = []
+                for i, tr in enumerate(t.transitions):
+                    t_new.transitions.append(cloneArtefact(tr,name="->"))
                 pt = model.addProdType(t,t_new)
             else:
-                pt = model.addProdType(t)    
+                pt = model.addProdType(t)
                 if len(model.prodtypes) == 1:
                     pt.percentage = 1.0
             if not self.GetItemData(self.item).get("artefact"):
                 p.tree.add(id(pt), "treeItem",self.AppendItem(p.tree.get(id(model), "pt_treeItem"), pt.name))
                 self.Expand(p.tree.get(id(model), "pt_treeItem"))
-            else:                
+            else:
                 p.tree.add(id(pt), "treeItem",self.InsertItem(self.GetItemParent(p.tree.get(id(t), "treeItem")), self.item, pt.name))
             self.SetItemData(p.tree.get(id(pt), "treeItem"), {"view": "Product Types", "model": modelSelected, "artefact": pt})
             p.tree.add(id(pt), "op_treeItem",self.AppendItem(p.tree.get(id(pt), "treeItem"), "Operations"))
@@ -2067,13 +2071,13 @@ class CustomTreeCtrl(CT.CustomTreeCtrl):
             for o in pt.operations:
                 p.tree.add(id(o), "treeItem",self.AppendItem(p.tree.get(id(pt), "op_treeItem"), o.name))
                 self.SetItemData(p.tree.get(id(o), "treeItem"), {"view": "Operations", "model": modelSelected, "artefact": o})
-            self.Expand(p.tree.get(id(pt), "op_treeItem"))                
+            self.Expand(p.tree.get(id(pt), "op_treeItem"))
             log.append(f"Product Type {pt.name}: added.")
             p.prodtype = pt
         model.bComputed = False
         model.change(True,p.tree.get(id(model),"treeCtrl"),p.tree.get(id(model),"treeItem"))
-        p.OnRefresh(None,bRefresh=True)            
-        p.addMode = "Add"    
+        p.OnRefresh(None,bRefresh=True)
+        p.addMode = "Add"
 
     def OnClone(self, event):
         p = self.GetParent().GetParent().GetParent()
@@ -2093,18 +2097,18 @@ class CustomTreeCtrl(CT.CustomTreeCtrl):
         if op:
             o = op
             dlg.msg.SetLabel(f"Please assign operation {op.name} to a different workcenter.")
-        else:    
+        else:
             o = self.GetItemData(self.item).get("artefact")
         dlg.button_OK.SetDefault()
         dlg.combo_box_pt.Clear()
         dlg.list_box_wc.Clear()
-        for i, w in enumerate(model.workcenter):        
-            dlg.list_box_wc.Append(w.name)        
-        for i, t in enumerate(model.prodtypes):        
+        for i, w in enumerate(model.workcenter):
+            dlg.list_box_wc.Append(w.name)
+        for i, t in enumerate(model.prodtypes):
             dlg.combo_box_pt.Append(t.name)
-        dlg.combo_box_pt.Select(model.prodtypes.index(o.ProdType))            
+        dlg.combo_box_pt.Select(model.prodtypes.index(o.ProdType))
         dlg.prodTypeSelected(None)
-        dlg.list_box_op.Select(o.ProdType.operations.index(o))            
+        dlg.list_box_op.Select(o.ProdType.operations.index(o))
         dlg.opSelected(None)
         if dlg.ShowModal() == wx.ID_OK:
             model.bComputed = False
@@ -2113,7 +2117,7 @@ class CustomTreeCtrl(CT.CustomTreeCtrl):
         else:
             for c in reversed(dlg.changes):
                 c["operation"].WCNumber = c["oldWorkcenter"]
-            return False    
+            return False
         dlg.Destroy()
         return True
 
@@ -2126,7 +2130,7 @@ class CustomTreeCtrl(CT.CustomTreeCtrl):
             self.OnDeleteWc(w,p,model)
         elif isinstance(self.GetItemData(self.item).get("artefact"),Operation):
             o = self.GetItemData(self.item).get("artefact")
-            self.OnDeleteOp(o,p)            
+            self.OnDeleteOp(o,p)
         elif isinstance(self.GetItemData(self.item).get("artefact"),ProdType):
             t = self.GetItemData(self.item).get("artefact")
             self.OnDeletePt(t,p)
@@ -2139,21 +2143,21 @@ class CustomTreeCtrl(CT.CustomTreeCtrl):
                 if not self.AssignOp(model,op=ops[0]):
                     break
             else:
-                bDone = True  
-        if bDone:          
+                bDone = True
+        if bDone:
             model.deleteWorkcenter(w)
             log.append(f"Workcenter {w.name} deleted.")
             p.OnRefresh(None,bRefresh=True)
-        return bDone    
+        return bDone
 
     def OnDeleteOp(self, o, p):
         o.ProdType.deleteOperation(o)
         model.findUsedWorkcenter()
         try:
             self.Delete(self.item)
-        except AttributeError: pass    
+        except AttributeError: pass
         log.append(f"Operation {o.name} of product type {o.ProdType.name} deleted.")
-        p.OnRefresh(None,bRefresh=True)                
+        p.OnRefresh(None,bRefresh=True)
 
     def OnDeletePt(self, t, p):
         dlg = wx.MessageDialog(self, f"Do you want to delete product type {t.name} with all {len(t.operations)} operations ?",
@@ -2161,16 +2165,16 @@ class CustomTreeCtrl(CT.CustomTreeCtrl):
                 wx.YES_NO | wx.NO_DEFAULT | wx.ICON_STOP
                 )
         rc = dlg.ShowModal()
-        if rc == wx.ID_YES:        
+        if rc == wx.ID_YES:
             model.deleteProdType(t)
             model.findUsedWorkcenter()
             try:
                 self.Delete(self.item)
-            except AttributeError: pass    
+            except AttributeError: pass
             log.append(f"Product type {t.name} deleted.")
-            p.OnRefresh(None,bRefresh=True)  
-        dlg.Destroy()                                                  
-        
+            p.OnRefresh(None,bRefresh=True)
+        dlg.Destroy()
+
     def HandleModelPreferences(self, event):
         dlg = PrefModelDialog(self)
         dlg.Show()
@@ -2208,7 +2212,7 @@ class CustomTreeCtrl(CT.CustomTreeCtrl):
         if wc:
             w = wc
         else:
-            w = self.GetItemData(self.item).get("artefact")    
+            w = self.GetItemData(self.item).get("artefact")
         dlg.property_grid_1.AddPage( "Workcenter Preferences" )
         dlg.property_grid_1.Append( wxpg.PropertyCategory("1 - Basic Characteristic") )
         dlg.property_grid_1.Append( wxpg.StringProperty("Name",value=f"{w.name}",name="name") )
@@ -2281,44 +2285,44 @@ class CustomTreeCtrl(CT.CustomTreeCtrl):
             dlg.list_box_y2.Clear()
             dlg.check_list_box_1.Clear()
             for i in range(4):
-                dlg.list_box_x.Append(xValues[i])                        
-            dlg.list_box_x.SetSelection(xValueAttributes.index(p.x))                
-            dlg.list_box_y2.Append("None")    
-            for c in p.ColsAvailable:    
-                dlg.list_box_y.Append(getLabel(c,model))            
+                dlg.list_box_x.Append(xValues[i])
+            dlg.list_box_x.SetSelection(xValueAttributes.index(p.x))
+            dlg.list_box_y2.Append("None")
+            for c in p.ColsAvailable:
+                dlg.list_box_y.Append(getLabel(c,model))
                 dlg.list_box_y2.Append(getLabel(c,model))
-            if p.col:    
-                dlg.list_box_y.SetSelection(p.ColsAvailable.index(p.col))            
-            else:    
-                dlg.list_box_y.SetSelection(1)            
-            if p.col2:    
-                dlg.list_box_y2.SetSelection(p.ColsAvailable.index(p.col2)+1)            
-            else:    
-                dlg.list_box_y2.SetSelection(0)            
-            dlg.check_list_box_1.Append("Line")   
+            if p.col:
+                dlg.list_box_y.SetSelection(p.ColsAvailable.index(p.col))
+            else:
+                dlg.list_box_y.SetSelection(1)
+            if p.col2:
+                dlg.list_box_y2.SetSelection(p.ColsAvailable.index(p.col2)+1)
+            else:
+                dlg.list_box_y2.SetSelection(0)
+            dlg.check_list_box_1.Append("Line")
             for w in model.workcenter:
                 if not w.Used:
                     continue
-                dlg.check_list_box_1.Append(w.name)                
-            dlg.cnt = len(model.workcenter)+1    
-            dlg.check_list_box_1.SetCheckedItems(p.workcenterSelected)            
+                dlg.check_list_box_1.Append(w.name)
+            dlg.cnt = len(model.workcenter)+1
+            dlg.check_list_box_1.SetCheckedItems(p.workcenterSelected)
             dlg.doWorkcenterSelected(None)
-            if dlg.ShowModal() == wx.ID_OK:       
+            if dlg.ShowModal() == wx.ID_OK:
                 p.x = xValueAttributes[dlg.list_box_x.GetSelection()]
                 sel1 = dlg.list_box_y.GetSelection()
                 p.col =  p.ColsAvailable[sel1]
                 sel2 = dlg.list_box_y2.GetSelection()
                 if sel2 == 0:
                     p.col2 =  None
-                else:    
+                else:
                     p.col2 =  p.ColsAvailable[sel2-1]
-                p.workcenterSelected = dlg.check_list_box_1.GetCheckedItems()     
+                p.workcenterSelected = dlg.check_list_box_1.GetCheckedItems()
                 if not p.workcenterSelected:
                     p.workcenterSelected = (0,)
                 if len(p.workcenterSelected) > 1:
                     p.col2 = None
             else:
-                return        
+                return
         RenderGraphics(p,model,x=p.x,col=p.col,col2=p.col2,workcenterSelected=p.workcenterSelected,
             dx=winSize[0],dy=winSize[1],dpi=dpi)
 
@@ -2332,25 +2336,25 @@ class CustomTreeCtrl(CT.CustomTreeCtrl):
         p = self.GetParent().GetParent().GetParent()
         p.x = "DR"
         RenderGraphics(p,model,x="DR",col=p.col,col2=p.col2,workcenterSelected=p.workcenterSelected,
-            dx=winSize[0],dy=winSize[1],dpi=dpi)        
+            dx=winSize[0],dy=winSize[1],dpi=dpi)
 
     def DoPlotSOB(self, event):
         p = self.GetParent().GetParent().GetParent()
         p.x = "SOB"
         RenderGraphics(p,model,x="SOB",col=p.col,col2=p.col2,workcenterSelected=p.workcenterSelected,
-            dx=winSize[0],dy=winSize[1],dpi=dpi)                
+            dx=winSize[0],dy=winSize[1],dpi=dpi)
 
     def DoPlotSHIP(self, event):
         p = self.GetParent().GetParent().GetParent()
         p.x = "SHIP"
         RenderGraphics(p,model,x="SHIP",col=p.col,col2=p.col2,workcenterSelected=p.workcenterSelected,
-            dx=winSize[0],dy=winSize[1],dpi=dpi)                
+            dx=winSize[0],dy=winSize[1],dpi=dpi)
 
     def DoPlotNo2ndY(self, event):
         p = self.GetParent().GetParent().GetParent()
         p.col2 = None
         RenderGraphics(p,model,x=p.x,col=p.col,col2=p.col2,workcenterSelected=p.workcenterSelected,
-            dx=winSize[0],dy=winSize[1],dpi=dpi)                        
+            dx=winSize[0],dy=winSize[1],dpi=dpi)
 
 def loadModel(f,frame):
     model = None
@@ -2358,11 +2362,11 @@ def loadModel(f,frame):
         with open(f, "rb") as f:
             model = pickle.load(f)
     except FileNotFoundError:
-        print("File not found: %s." % f)            
-    else:    
+        print("File not found: %s." % f)
+    else:
         model.change(False)
         frame.frame_1_statusbar.SetLabel("Model '%s' loaded." % model.name)
-    return model    
+    return model
 
 
 if __name__ == '__main__':
