@@ -28,6 +28,8 @@ based on a model consisting of
   ## Documentation
   is [here](https://htmlpreview.github.io/?https://raw.githubusercontent.com/axel-magard/ams/main/html/ams.html) 
   
+  An introdcution video is available [here](https://www.youtube.com/watch?v=Nd4KpAgHseQ) on youtube.
+  
   ## Installation
   
   ### Alternative 1
