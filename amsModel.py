@@ -279,7 +279,7 @@ class Model:
                 p = self.addProdType(None,ProdType(name,"Parts started","Parts finished", "New Product Type",self))
                 newPT.append(p)
             i = table["Name"].index(name)
-            p.percentage = float(table["Percentage"][i])
+            p.percentage = float(table["Percentage"][i])/100.0
             p.inParts = table["In Parts"][i]
             p.outParts = table["Out Parts"][i]
             p.description = table["Description"][i]
