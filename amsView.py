@@ -5,6 +5,8 @@ import io
 import base64
 import copy
 import wx.grid as gridlib
+import requests, io
+from PIL import Image
 from amsCfg import cfgGet, getColumns, getOutputItemByName, getCharts
 from amsData import dataDict, getDataDictItem, getDataDictItems, getLabel
 
@@ -182,6 +184,36 @@ def RenderPflowData(prodtype):
         html += "<td>%.2f</td><td>%.2f</td><td>%.2f</td></tr>" % (t.OperatorTime,t.TransitionCost,t.TransitionTime)
         op = t.op
     html += "</table>"
+    return html
+
+def DrawPflowData(prodtype,withWC):
+    graph = """
+        graph LR;
+    """
+    wc = {}
+    for i, w in enumerate(prodtype.model.workcenter):
+        wc[w.name] = []
+    for i, o in enumerate(prodtype.operations):
+        wc[prodtype.model.workcenter[o.WCNumber-1].name].append(o.name)
+        tr = prodtype.getSucc(i+1)
+        for t in tr:
+            g = f"{o.name}--> "
+            if t.Prob == 1.0:
+                g += f"{t.getOPName(t.to)}"
+            else:
+                g += f"|{t.Prob}| {t.getOPName(t.to)}"
+            graph += g + ";\n"
+    if withWC == "True":
+        for w in wc:
+            if wc[w]:
+                graph += f"subgraph {w}\n{' & '.join(wc[w])}\nend\n"
+    graphbytes = graph.encode("ascii")
+    base64_bytes = base64.b64encode(graphbytes)
+    base64_string = base64_bytes.decode("ascii")
+    fn = f"{prodtype.name} Flow.jpg"
+    with Image.open(io.BytesIO(requests.get('https://mermaid.ink/img/' + base64_string).content)) as im:
+        im.save(fn, "JPEG")
+    html = '<img src="{}">'.format(fn)
     return html
 
 

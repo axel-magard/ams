@@ -25,7 +25,7 @@ from amsData import getDataDictItems, getLabel, getPlotsAvailable
 from amsCfg import getOutputItems, getOutputItemByName, cfgGet, getCharts
 from GridStdEdRend import EditorsAndRenderersGrid
 
-version = "1.0"
+version = "1.10"
 SLASH = os.sep
 models = []
 model = None
@@ -917,7 +917,9 @@ class PrefDialog(wx.Dialog):
         # end wxGlade
     def onOK(self, event):  # wxGlade: PrefDialog.<event_handler>
         for p in self.pendingProperties:
-            cfg["computations"][p.GetName().lower()] = p.GetValueAsString()
+            for s in self.cfg_sections:
+                if p.GetName() in self.cfg_sections[s]:
+                    cfg[s][p.GetName().lower()] = p.GetValueAsString()
         if self.GetParent().view == "Plot":
             hourglass = wx.BusyCursor()
             CompGraphics(model,NumValues=int(cfg["computations"]["GraphicValues"]))
@@ -1252,7 +1254,9 @@ class MyFrame(wx.Frame):
 
     def OnRefresh(self, event, bRefresh=False):
         if self.view in (model.name, "Model", "Workcenter", "Operations", "Product Types"):
-            self.panel_2.wv.LoadURL("file://"+os.getcwd()+SLASH+model.render(cfg["gui"]["font-size"],what=self.view,prodType=self.prodType))
+            hourglass = wx.BusyCursor()
+            self.panel_2.wv.LoadURL("file://"+os.getcwd()+SLASH+model.render(cfg,what=self.view,prodType=self.prodType))
+            del hourglass
         elif self.report == "Line and Workcenter Characteristics Table":
             self.ComputeResources(bRefresh=bRefresh)
         elif self.report == "Start Factors":
@@ -1401,7 +1405,9 @@ class MyFrame(wx.Frame):
         elif sel in (model.name, "Workcenter", "Operations", "Product Types"):
             if sel == model.name:
                 sel = "All"
-            self.panel_2.wv.LoadURL("file://"+os.getcwd()+SLASH+model.render(cfg["gui"]["font-size"],what=self.view))
+            hourglass = wx.BusyCursor()
+            self.panel_2.wv.LoadURL("file://"+os.getcwd()+SLASH+model.render(cfg,what=self.view))
+            del hourglass
 
     def TreeAddReports(self,what="Line and Workcenter Characteristics Table"):
         if what in ("Line and Workcenter Characteristics Table","Start Factors"):
@@ -1466,7 +1472,9 @@ class MyFrame(wx.Frame):
             else:
                 self.ApplyReport()
             if self.view in (model.name, "Model", "Workcenter", "Operations", "Product Types"):
-                self.panel_2.wv.LoadURL("file://"+os.getcwd()+SLASH+model.render(cfg["gui"]["font-size"],what=self.view,prodType=self.prodType))
+                hourglass = wx.BusyCursor()
+                self.panel_2.wv.LoadURL("file://"+os.getcwd()+SLASH+model.render(cfg,what=self.view,prodType=self.prodType))
+                del hourglass
             self.current_report = self.report
             self.modelSelected = modelSelected
 
@@ -1736,10 +1744,16 @@ class MyFrame(wx.Frame):
     def HandlePreferences(self, event):  # wxGlade: MyFrame.<event_handler>
         dlg = PrefDialog(self)
         dlg.Show()
+        dlg.cfg_sections = {"computations": ["GraphicValues"], "visualizations": ["DrawPflow", "DrawPflowWithWC"]}
         dlg.property_grid_1.AddPage( "Preferences" )
         dlg.property_grid_1.Append( wxpg.PropertyCategory("1 - Computations") )
         dlg.property_grid_1.Append( wxpg.StringProperty("GraphicValues",value="25") )
-        dlg.property_grid_1.GetPropertyByName("GraphicValues").SetValue(cfg["computations"]["GraphicValues"])
+        dlg.property_grid_1.Append( wxpg.PropertyCategory("2 - Visualizations") )
+        dlg.property_grid_1.Append( wxpg.BoolProperty("DrawPflow",value=False) )
+        dlg.property_grid_1.Append( wxpg.BoolProperty("DrawPflowWithWC",value=False) )
+        for s in dlg.cfg_sections:
+            for o in dlg.cfg_sections[s]:
+                dlg.property_grid_1.GetPropertyByName(o).SetValue(cfg[s][o])
         event.Skip()
 
     def IncrFontSize(self, event):  # wxGlade: MyFrame.<event_handler>

@@ -2,7 +2,7 @@ import sys
 import copy
 import re
 
-from amsView import RenderModelData, RenderWorkcenterData, RenderProdTypeData, RenderOperationData, RenderPflowData, unitOfTime
+from amsView import RenderModelData, RenderWorkcenterData, RenderProdTypeData, RenderOperationData, RenderPflowData, unitOfTime, DrawPflowData
 from amsData import dataDict, getDataDictItem, getDataDictItems, getLabel
 
 CSSStyle = """
@@ -62,7 +62,8 @@ class Model:
             else:
                 treeCtrl.SetItemText(treeItem,treeCtrl.GetItemText(treeItem).replace(" *",""))
         self.changed = changed
-    def render(self,fontsize,what="All",prodType=None):
+    def render(self,cfg,what="All",prodType=None):
+        fontsize = cfg["gui"]["font-size"]
         self.htmlFile = "%s.html" % self.name
         html = "<html><head>%s<title>%s</title></head><body><h1>%s</h1>" % ((CSSStyle % fontsize),self.name,self.name)
         if what in ("All","Model"):
@@ -77,6 +78,8 @@ class Model:
                     html += RenderOperationData(p)
                 if what in ("All","Product Types","Process Flow"):
                     html += RenderPflowData(p)
+                    if cfg["visualizations"]["DrawPflow"] == "True":
+                        html += DrawPflowData(p,cfg["visualizations"]["DrawPflowWithWC"])
         html += "</body></html>"
         f = open(self.htmlFile,"w")
         f.write(html)
