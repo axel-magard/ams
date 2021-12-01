@@ -1,5 +1,5 @@
 # Version 1.10
-AMS now has the capability to draw process flows graphically by using (Mermaind)[https://mermaid-js.github.io/mermaid/#/].
+AMS now has the capability to draw process flows graphically by using [Mermaind](https://mermaid-js.github.io/mermaid/#/).
 
 Process flows can be drawn with or without workcenter:
 
