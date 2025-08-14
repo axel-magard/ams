@@ -94,7 +94,7 @@ def styleTable(df,fontsize):
         dict(selector="th", props=props1),
         dict(selector="td", props=props2)
     ]
-    return df.style.set_table_styles(styles).render()
+    return df.style.set_table_styles(styles).to_html()
 
 def formatValue(val,k,model):
     renderer = ()
@@ -145,7 +145,7 @@ def RenderWorkcenterData(model,bn):
         if not w.Used:
             notUsedList.append(w.name)
     df = pd.DataFrame(table)
-    html += df.style.set_table_styles(styles).apply(highlight_bottleneck, axis=0, args=(bn,)).apply(highlight_notUsed, axis=1, args=(notUsedList,)).render()
+    html += df.style.set_table_styles(styles).apply(highlight_bottleneck, axis=0, args=(bn,)).apply(highlight_notUsed, axis=1, args=(notUsedList,)).to_html()
     return html
 
 def RenderProdTypeData(model):
@@ -153,14 +153,14 @@ def RenderProdTypeData(model):
     table = model.makeProductTypeTable()
     df = pd.DataFrame(table)
     df = df.astype({"Percentage":'float64'})
-    html += df.style.format({'Percentage': '{:.2f} %'}).set_table_styles(styles).render()
+    html += df.style.format({'Percentage': '{:.2f} %'}).set_table_styles(styles).to_html()
     return html
 
 def RenderOperationData(prodtype):
     html = "<h1>Product Type '%s' Operations</h1><table>" % prodtype.name
     table = prodtype.makeOperationTable()
     df = pd.DataFrame(table)
-    html += df.style.set_table_styles(styles).render()
+    html += df.style.set_table_styles(styles).to_html()
     return html
 
 def RenderPflowData(prodtype):
@@ -304,7 +304,7 @@ def addOutputItem(w,html,cfg,df,bn,col,model,typeSelected,chart="",cols=set(),dx
     html += "<h1>%s %s</h1>" % (title,model.name)
     if not chart:
         try:
-            html += df[["Workcenter",] + columns].style.set_table_styles(styles).apply(highlight_bottleneck, axis=0, args=(bn,)).render()
+            html += df[["Workcenter",] + columns].style.set_table_styles(styles).apply(highlight_bottleneck, axis=0, args=(bn,)).to_html()
         except (KeyError,) as e:
             html += "<div class='error'>%s</div>" % e
     charts = getCharts(cfg,s)
